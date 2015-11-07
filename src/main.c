@@ -16,7 +16,9 @@ int main(void)
 {
 
 
-   printf("8=D\n");
+   printf("8)\n");
+   
 
+   
    return 0;
 }
