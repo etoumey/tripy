@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+void get_input(int *a);
+
 /*************************************************************************/
 /*                                                                       */
 /*  File:         main.c                                                 */
@@ -10,15 +12,14 @@
 /*                                                                       */
 /*************************************************************************/
 
-
-
 int main(void)
 {
-
-
-   printf("8)\n");
+   // Variable declaration
+   int lthr;
    
-
+   get_input(&lthr);
    
+   printf("your lthr is: %d BPM\n",lthr);
+     
    return 0;
 }
