@@ -10,9 +10,28 @@
 /*                                                                       */
 /*************************************************************************/
 
-void get_input(int *a)
+void get_input(char *a, int *b)
 {
-   printf("Enter threshold heart rate in BPM: \n");
-   scanf("%d",a);
+   //
+   int input_check = 0;
    
+   // 
+   printf("Enter file name: \n");
+   scanf("%c",a);
+   //
+   while (input_check != 1)
+   {  
+      printf("Enter threshold heart rate in BPM: \n");
+      scanf("%d",b);
+      //
+      if (*b < 50 || *b > 215)
+      {
+         printf("!!! Please enter a reasonable LTHR !!!\n");
+         input_check = 0;
+      }
+      else 
+      {
+         input_check = 1;
+      }
+   }
 }
