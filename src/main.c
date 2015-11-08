@@ -21,9 +21,9 @@ int main(void)
    // GET INPUT: LTHR, desired *.fit file name
    //
    get_input(&file_name, &lthr);
-   
    // echo your input   
-   printf("File name   : %c\n",file_name);   
+   printf("File name   : %c\n",file_name);
+   printf("File length : %d\n",sizeof(file_name));   
    printf("your lthr is: %d BPM\n",lthr);
    //
    // DECODE *.FIT FILE: using "fitSDK"

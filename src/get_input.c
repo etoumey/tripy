@@ -17,7 +17,6 @@ void get_input(char *ptr_file_name, int *ptr_lthr)
 {
    //
    int input_check = 0;
-   
    // 
    while (input_check != 1)
    {
@@ -27,9 +26,8 @@ void get_input(char *ptr_file_name, int *ptr_lthr)
       // verify if no *.tcx extension, read correct file
 //      if (*ptr_file_name )
       input_check = 1;
-   }  
-
-
+   }
+  
    //
    input_check = 0;
    while (input_check != 1)
