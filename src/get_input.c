@@ -8,6 +8,9 @@
 /*                                                                       */
 /*  Description:  Read in user inputs                                    */
 /*                                                                       */
+/*  Inputs:       ptr_file_name  memory address of input file name       */
+/*                ptr_lthr       memory address of threshold HR          */
+/*                                                                       */
 /*************************************************************************/
 
 void get_input(char *ptr_file_name, int *ptr_lthr)
@@ -16,9 +19,15 @@ void get_input(char *ptr_file_name, int *ptr_lthr)
    int input_check = 0;
    
    // 
-   printf("Enter file name: \n");
-   scanf("%c",ptr_file_name);
-   
+   while (input_check != 1)
+   {
+      printf("Enter file name: \n");
+      scanf("%c",ptr_file_name);
+      // fix this with input checking
+      // verify if no *.tcx extension, read correct file
+//      if (*ptr_file_name )
+      input_check = 1;
+   }  
 
 
    //
