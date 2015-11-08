@@ -22,12 +22,13 @@ int main(void)
    //
    get_input(&file_name, &lthr);
    
+   // echo your input   
    printf("File name   : %c\n",file_name);   
    printf("your lthr is: %d BPM\n",lthr);
    //
    // DECODE *.FIT FILE: using "fitSDK"
    //
-
+   //decode_fit(&file_name);
 
    //
    // PARSE XML FILE: look at the HRs in the 'decoded' *.fit file
