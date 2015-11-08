@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void get_input(char *a, int *b);
+void get_input(char *ptr_file_name, int *ptr_lthr);
 
 /*************************************************************************/
 /*                                                                       */
