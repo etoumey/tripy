@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void get_input(char *ptr_file_name, int *ptr_lthr);
+void get_input(char* ptr_file_name, int *ptr_lthr);
 
 /*************************************************************************/
 /*                                                                       */
@@ -15,16 +15,16 @@ void get_input(char *ptr_file_name, int *ptr_lthr);
 int main(void)
 {
    // Variable declaration
-   char file_name;
+   char file_name[30];
    int lthr;
    //
    // GET INPUT: LTHR, desired *.fit file name
    //
-   get_input(&file_name, &lthr);
+   get_input(&file_name[30], &lthr);
    // echo your input   
-   printf("File name   : %c\n",file_name);
-   printf("File length : %d\n",sizeof(file_name));   
-   printf("your lthr is: %d BPM\n",lthr);
+   printf("File name   : %s\n",file_name);
+   printf("File length : %zu\n",sizeof(file_name));   
+   printf("Your lthr is: %d BPM\n",lthr);
    //
    // DECODE *.FIT FILE: using "fitSDK"
    //
