@@ -18,17 +18,17 @@ void get_input(char* ptr_file_name, int *ptr_lthr)
 {
    //
    int input_check = 0;
-   /*
+    
    while (input_check == 0)
    {
       printf("Enter file name: \n");
-      scanf("%c",ptr_file_name);
+      scanf("%s",&ptr_file_name);
       // fix this with input checking
       // verify if no *.tcx extension, read correct file
 //      if (*ptr_file_name )
       input_check = 1;
    }
-  */
+  
    
 //   printf("Enter file name: \n");
 //   scanf("%29s",ptr_file_name);
