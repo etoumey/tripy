@@ -22,9 +22,13 @@ int main(void)
    //
    get_input(&file_name[30], &lthr);
    // echo your input   
-   printf("\nFile name   : %s", &file_name);
-   printf("\nFile length : %zu",sizeof(file_name));   
+//   printf("\nFile name   : %s", &file_name);
+//   printf("\nFile length : %zu",sizeof(file_name));   
    printf("\nYour lthr is: %d BPM",lthr);
+   //
+   // CALCULATE HR ZONES: hr zones from Joe Friel
+   // 
+   
    //
    // DECODE *.FIT FILE: using "fitSDK"
    //

@@ -21,20 +21,14 @@ void get_input(char *ptr_file_name, int *ptr_lthr)
     
    while (input_check == 0)
    {
-      printf("\nEnter file name: ");
-      scanf("%s",&ptr_file_name);
       // fix this with input checking
-      // verify if no *.tcx extension, read correct file
-//      if (*ptr_file_name )
+      printf("\nEnter file name: ");
+      fgets(ptr_file_name, 255, stdin);
+      printf("\nFile name echo: %s", ptr_file_name);
       input_check = 1;
    }
   
    
-//   printf("Enter file name: \n");
-//   scanf("%29s",ptr_file_name);
-//   ptr_file_name = "gemini_tcx.tcx";
-   printf("\nFile name echo: %s", &ptr_file_name);
-   fgets(&ptr_file_name, 255, stdin);
    //
    input_check = 0;
    while (input_check == 0)
