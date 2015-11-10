@@ -15,7 +15,7 @@
 /*                                                                       */
 /*************************************************************************/
 
-void calc_hr_zones(int ptr_lthr, float *ptr_zone_array)
+void calc_hr_zones(float *ptr_lthr, float *ptr_zone_array)
 {
    // variable declarations
    
@@ -30,7 +30,8 @@ void calc_hr_zones(int ptr_lthr, float *ptr_zone_array)
 
    for (ii = 0;ii < 6;ii++)
    {
-      ptr_zone_array[ii] = zone_percent[ii] * ptr_lthr;
+      // possible ceiling function
+      ptr_zone_array[ii] = zone_percent[ii] * *ptr_lthr;
       printf("\n%f\n",ptr_zone_array[ii]);
    }
 }
