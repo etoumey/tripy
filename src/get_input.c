@@ -14,7 +14,7 @@
 /*                                                                       */
 /*************************************************************************/
 
-void get_input(char *ptr_file_name, int *ptr_lthr)
+void get_input(char *ptr_file_name, float *ptr_lthr)
 {
    //
    int input_check = 0;
@@ -34,7 +34,7 @@ void get_input(char *ptr_file_name, int *ptr_lthr)
    while (input_check == 0)
    {  
       printf("\nEnter threshold heart rate in BPM: ");
-      scanf("%d",ptr_lthr);
+      scanf("%f",ptr_lthr);
       //
       if (*ptr_lthr < 50 || *ptr_lthr > 215)
       {

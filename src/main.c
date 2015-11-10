@@ -1,6 +1,7 @@
 #include <stdio.h>
 
-void get_input(char* ptr_file_name, int *ptr_lthr);
+void get_input(char* ptr_file_name, float *ptr_lthr);
+void calc_hr_zones(float *ptr_lthr, float *zone_array);
 
 /*************************************************************************/
 /*                                                                       */
@@ -16,7 +17,8 @@ int main(void)
 {
    // Variable declaration
    char file_name[30] = { '\0' };
-   int lthr;
+   float lthr;
+   float zone_array[6];
    //
    // GET INPUT: LTHR, desired *.fit file name
    //
@@ -24,11 +26,13 @@ int main(void)
    // echo your input   
 //   printf("\nFile name   : %s", &file_name);
 //   printf("\nFile length : %zu",sizeof(file_name));   
-   printf("\nYour lthr is: %d BPM",lthr);
+   printf("\nYour lthr is: %f BPM",lthr);
+
    //
    // CALCULATE HR ZONES: hr zones from Joe Friel
    // 
-   
+   calc_hr_zones(&lthr, zone_array);
+      
    //
    // DECODE *.FIT FILE: using "fitSDK"
    //
