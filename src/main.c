@@ -16,6 +16,7 @@ void calc_hr_zones(float *ptr_lthr, float *zone_array);
 int main(void)
 {
    // Variable declaration
+   int ii;
    char file_name[30] = { '\0' };
    float lthr;
    float zone_array[6];
@@ -32,7 +33,7 @@ int main(void)
    // CALCULATE HR ZONES: hr zones from Joe Friel
    // 
    calc_hr_zones(&lthr, zone_array);
-      
+   
    //
    // DECODE *.FIT FILE: using "fitSDK"
    //
