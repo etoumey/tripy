@@ -34,16 +34,25 @@ void get_input(char *ptr_file_name, float *ptr_lthr)
    while (input_check == 0)
    {  
       printf("\nEnter threshold heart rate in BPM: ");
-      scanf("%f",ptr_lthr);
-      //
-      if (*ptr_lthr < 50 || *ptr_lthr > 215)
+      if(scanf("%f", ptr_lthr))
       {
-         printf("\n!!! Please enter a reasonable LTHR !!!\n\n");
-         input_check = 0;
+        //
+      	if (*ptr_lthr < 50 || *ptr_lthr > 215)
+      	{
+      	   printf("\n!!! Please enter a reasonable LTHR !!!\n\n");
+	   input_check = 0;
+      	}
+        else 
+        {
+           input_check = 1;
+        }
       }
-      else 
+      else
       {
-         input_check = 1;
+	printf("enter a number yo");
+        input_check = 0;
+        *ptr_lthr = 0;
       }
    }
 }
+
