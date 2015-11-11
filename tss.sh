@@ -1,9 +1,12 @@
 #!/bin/bash
 
-FILE=$(date +"%Y-%m-%d")
+cd /media/etoumey/GARMIN/Garmin/Activities
+
+FILE=$(ls -t | head -n1)
 printf "$FILE"
 
-FILE="testGPX.gpx"
+FILE="TestGPX.gpx"
 
-gcc ~/Documents/tss_estimator/src/get_input.c ~/Documents/tss_estimator/src/calc_hr_zones.c ~/Documents/tss_estimator/src/main.c -lm -o ~/Documents/tss_estimator/a.out
+#gcc ~/Documents/tss_estimator/src/get_input.c ~/Documents/tss_estimator/src/calc_hr_zones.c ~/Documents/tss_estimator/src/main.c -lm -o ~/Documents/tss_estimator/a.out
 
+#./a.out < $FILE
