@@ -18,9 +18,12 @@ void file_process(float *raw_data, char *ptr_file_name)
 {
   //Declarations
   FILE *fp;
-  int c;
- 
-  //Statements
+  char c;
+  int r = 0;  //current row counter
+  int inputCheck;
+  char *line[300]; 
+  char *currentTime[10];  
+//Statements
   fp = fopen("/home/etoumey/Documents/tss_estimator/src/TestGPX.gpx", "r");
   
   //ensure file exists and opened
@@ -33,12 +36,27 @@ void file_process(float *raw_data, char *ptr_file_name)
     c = fgetc(fp);  //initial read
     do
     {
-      printf("%c", c);
-
-      c = fgetc(fp);
+      if(c == 't')
+      {
+        c = fgetc(fp);
+        if(c == 'i')
+        {
+          c = fgetc(fp);
+          if(c == 'm')
+          {
+            c = fgetc(fp);
+            if(c == 'e')
+            {
+              printf("time tag found\n");
+            }
+          }
+        }
+      }
+      else        
+      {
+        c = fgetc(fp);
+      }      
     }while(!feof(fp));
     fclose(fp);
-  } 
-
-  
+  }  
 }
