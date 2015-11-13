@@ -3,6 +3,7 @@
 void get_input(char *ptr_file_name, float *ptr_lthr);
 void calc_hr_zones(float *ptr_lthr, float *zone_array);
 void file_process(float *raw_data, char *ptr_file_name);
+char parse_file_file(char *ptr_file_name);
 
 /*************************************************************************/
 /*                                                                       */
@@ -44,7 +45,9 @@ int main(void)
    //
    // PARSE XML FILE: look at the HRs in the 'decoded' *.fit file
    //
-   file_process(&raw_data[1000][2], &file_name[30]);
+//   file_process(&raw_data[1000][2], &file_name[30]);
+
+   parse_file_line(&file_name[30]);
    //
    // SORT HR: figure out time spent in each zone
    //
