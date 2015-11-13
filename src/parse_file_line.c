@@ -23,18 +23,24 @@ int parse_file_line(char *ptr_file_name)
    size_t len;
    char *ptr_b;
    int counter = 1;
-
+   char buffer_nw[256];
 
    fp = fopen("./TestGPX.gpx", "r");
    
-   while(fgets(buffer, 256, fp))
+   printf("Reading file...\n");
+//   while(fgets(buffer, 256, fp))
+   while(counter < 10)
    {
-      printf("Reading file...\n");
+      fgets(buffer, 256, fp);
       printf("Line: %d, %s\n",counter,buffer);
 
-      ptr_b = strip_spaces(&buffer[256]);      
-      printf("%s\n",&ptr_b);
-      counter = counter++;
+      sscanf(buffer,"%s",buffer_nw);
+
+      printf("%s\n",buffer_nw);
+
+//      ptr_b = strip_spaces(&buffer[256]);      
+      //printf("%s\n",&ptr_b);
+      counter++;
    }
    fclose(fp);
 
