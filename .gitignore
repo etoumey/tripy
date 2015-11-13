@@ -1,2 +1,8 @@
+# Compiled Source #
+*.exe
 *.o
+*.out
 bin/
+
+#
+*.log
