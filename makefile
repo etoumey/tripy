@@ -1,13 +1,10 @@
 # makefile for TSS estimator
+SRC_FILES = $(wildcard src/*.c)
 
-./bin/main: ./bin/main.o ./bin/get_input.o ./bin/calc_hr_zones.o
-	gcc ./bin/main.o ./bin/get_input.o ./bin/calc_hr_zones.o -o ./bin/main -lm
+OBJ_FILES = $(addprefix bin/,$(notdir $(SRC_FILES:.c=.o)))
 
-./bin/main.o: ./src/main.c
-	gcc ./src/main.c -o main.o
+./bin/main: $(OBJ_FILES)
+	gcc -o $@ $^ -lm
 
-./bin/get_input.o: ./src/get_input.c
-	gcc ./src/get_input.c -o get_input.o
-
-./bin/calc_hr_zones.o: ./src/calc_hr_zones.c
-	gcc ./src/calc_hr_zones.c -o calc_hr_zones.o
+./bin/%.o: src/%.c
+	gcc -c -o $@ $< -lm
