@@ -41,6 +41,11 @@ int parse_file_line(char *ptr_file_name)
       strip_leading_spaces(buffer);
       printf("Line: %d, %s\n",counter,buffer);
 
+      if(strncmp(buffer,"<time",5) == 0)
+      {
+         printf(":)\n");
+      }
+
       counter++;
    }
    fclose(fp);
