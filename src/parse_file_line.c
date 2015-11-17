@@ -25,6 +25,7 @@ int parse_file_line(char *ptr_file_name)
    char *ptr_b;
    int counter = 1;
    char buffer_nw[256];
+   char time_buffer[8];
 
    // Open the *test* input file
    fp = fopen("./TestGPX.gpx", "r");
@@ -44,6 +45,8 @@ int parse_file_line(char *ptr_file_name)
       if(strncmp(buffer,"<time",5) == 0)
       {
          printf(":)\n");
+         strncpy(time_buffer, buffer + 17, 8);
+         printf("%s\n",time_buffer);
       }
 
       counter++;
