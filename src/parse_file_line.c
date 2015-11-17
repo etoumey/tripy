@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include <string.h>
 
-char *strip_spaces(char *str);
+char* strip_leading_spaces(char *input);
 
 /*************************************************************************/
 /*                                                                       */
@@ -25,21 +26,21 @@ int parse_file_line(char *ptr_file_name)
    int counter = 1;
    char buffer_nw[256];
 
+   // Open the *test* input file
    fp = fopen("./TestGPX.gpx", "r");
    
    printf("Reading file...\n");
 //   while(fgets(buffer, 256, fp))
-   while(counter < 10)
+   while(counter < 200)
    {
+      // Read the first string into the buffer, echo result
       fgets(buffer, 256, fp);
+      printf("Line: %d, %s",counter,buffer);
+
+      // Strip leading spaces, echo result
+      strip_leading_spaces(buffer);
       printf("Line: %d, %s\n",counter,buffer);
 
-      sscanf(buffer,"%s",buffer_nw);
-
-      printf("%s\n",buffer_nw);
-
-//      ptr_b = strip_spaces(&buffer[256]);      
-      //printf("%s\n",&ptr_b);
       counter++;
    }
    fclose(fp);
@@ -47,14 +48,21 @@ int parse_file_line(char *ptr_file_name)
    return(0);
 }
 
-char *strip_spaces(char *str)
+char* strip_leading_spaces(char *input)
 {
-   char *end;
+   int i,j;
 
-   while(isspace(str[256]))
+   i = 0;
+   j = 0;
+
+   while(input[i] != '\0')
    {
-       str++;
+      if(input[i] != ' ')
+      {
+         input[j++] = input[i];
+      }
+      i++;
    }
-
-   return(str);
+   input[j] = '\0';
+   return(input);
 }
