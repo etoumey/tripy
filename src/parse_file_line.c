@@ -26,6 +26,11 @@ int parse_file_line(char *ptr_file_name)
    int counter = 1;
    char buffer_nw[256];
    char time_buffer[8];
+   char time_buffer_nc[6];
+   int i,j;
+
+   i = 0;
+   j = 0;
 
    // Open the *test* input file
    fp = fopen("./TestGPX.gpx", "r");
@@ -40,13 +45,24 @@ int parse_file_line(char *ptr_file_name)
 
       // Strip leading spaces, echo result
       strip_leading_spaces(buffer);
-      printf("Line: %d, %s\n",counter,buffer);
+      if(strncmp(buffer,"<time",5) == 0)
+      {
+         printf("Line: %d, %s\n",counter,buffer);
+      }
 
       if(strncmp(buffer,"<time",5) == 0)
       {
          printf(":)\n");
          strncpy(time_buffer, buffer + 17, 8);
          printf("%s\n",time_buffer);
+/*         
+         while(time_buffer[i] != '\0')
+         {
+            if(time_buffer[i] != ':')
+            {
+               time_buffer[j++] = time_buffer[i];
+            }
+         } */
       }
 
       counter++;
@@ -65,7 +81,8 @@ char* strip_leading_spaces(char *input)
 
    while(input[i] != '\0')
    {
-      if(input[i] != ' ')
+      if(input[i] != ' ' && input[i] != ':')
+    //  if(input[i] != ' ')
       {
          input[j++] = input[i];
       }
