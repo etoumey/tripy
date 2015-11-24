@@ -39,6 +39,8 @@ int parse_file_line(char *ptr_file_name)
    char hour_char_type[3];
    char minute_char_type[3];
    char second_char_type[3];
+
+   int total_seconds;
    //
 
    i = 0;
@@ -80,9 +82,16 @@ int parse_file_line(char *ptr_file_name)
       strncpy(second_char_type, time_buffer + 4, 2);
       second_char_type[2] = '\0';
       printf("%s\n",second_char_type);
-//      hour_ret = strtol(time_buffer, &ptr_conv, 10);
-  //    printf("%ld\n",hour_ret);
 
+      hour_ret = strtol(hour_char_type, &ptr_conv, 10);
+//      printf("%ld\n",hour_ret);
+      minute_ret = strtol(minute_char_type, &ptr_conv, 10);
+      second_ret = strtol(second_char_type, &ptr_conv, 10);
+
+      // convert all items to seconds
+      total_seconds = hour_ret * 3600 + minute_ret * 60 + second_ret;
+      printf("%d\n\n",total_seconds);
+      // increment counter
       counter++;
    }
 
