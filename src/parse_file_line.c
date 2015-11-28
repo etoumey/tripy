@@ -41,10 +41,13 @@ int parse_file_line(char *ptr_file_name)
    char second_char_type[3];
 
    int total_seconds;
+
+   int time_counter;
    //
 
    i = 0;
    j = 0;
+   time_counter = 0;
 
    // Open the *test* input file
    fp = fopen("./TestGPX.gpx", "r");
@@ -63,34 +66,39 @@ int parse_file_line(char *ptr_file_name)
       {
          printf("Line: %d, %s\n",counter,buffer);
       }
-
+      //
+      // Check if current line is a "<time" tag
+      //
       if(strncmp(buffer,"<time",5) == 0)
       {
-         printf(":)\n");
          strncpy(time_buffer, buffer + 17, 6);
          printf("%s\n",time_buffer);
+
+         // Now our time_buffer holds a 6-char string with hrs, minutes, seconds
+         // let's convert to seconds
+         // 
+         strncpy(hour_char_type, time_buffer, 2);
+         hour_char_type[2] = '\0';
+         printf("%s\n",hour_char_type);
+         strncpy(minute_char_type, time_buffer + 2, 2);
+         minute_char_type[2] = '\0';
+         printf("%s\n",minute_char_type);
+         strncpy(second_char_type, time_buffer + 4, 2);
+         second_char_type[2] = '\0';
+         printf("%s\n",second_char_type);
+
+         hour_ret = strtol(hour_char_type, &ptr_conv, 10);
+         //      printf("%ld\n",hour_ret);
+         minute_ret = strtol(minute_char_type, &ptr_conv, 10);
+         second_ret = strtol(second_char_type, &ptr_conv, 10);
+
+         // convert all items to seconds
+         total_seconds = hour_ret * 3600 + minute_ret * 60 + second_ret;
+         printf("%d\n\n",total_seconds);
+
+         time_counter++;
       }
-      // Now our time_buffer holds a 6-char string with hrs, minutes, seconds
-      // let's convert to seconds
-      // 
-      strncpy(hour_char_type, time_buffer, 2);
-      hour_char_type[2] = '\0';
-      printf("%s\n",hour_char_type);
-      strncpy(minute_char_type, time_buffer + 2, 2);
-      minute_char_type[2] = '\0';
-      printf("%s\n",minute_char_type);
-      strncpy(second_char_type, time_buffer + 4, 2);
-      second_char_type[2] = '\0';
-      printf("%s\n",second_char_type);
 
-      hour_ret = strtol(hour_char_type, &ptr_conv, 10);
-//      printf("%ld\n",hour_ret);
-      minute_ret = strtol(minute_char_type, &ptr_conv, 10);
-      second_ret = strtol(second_char_type, &ptr_conv, 10);
-
-      // convert all items to seconds
-      total_seconds = hour_ret * 3600 + minute_ret * 60 + second_ret;
-      printf("%d\n\n",total_seconds);
       // increment counter
       counter++;
    }
