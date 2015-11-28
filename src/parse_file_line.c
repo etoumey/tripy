@@ -27,6 +27,7 @@ int parse_file_line(char *ptr_file_name)
    char buffer_nw[256];
    char time_buffer[8];
    char time_buffer_nc[6];
+   char hr_buffer[4];  //hope HR is fewer than 3 characters LOL
    int i,j;
 
    // variables for converting string to int
@@ -41,13 +42,16 @@ int parse_file_line(char *ptr_file_name)
    char second_char_type[3];
 
    int total_seconds;
+   int hr;  // integer HR
 
    int time_counter;
+   int hr_counter;  //counter for how many characters in HR
    //
 
    i = 0;
    j = 0;
    time_counter = 0;
+   hr_counter = 0;  //initialize hr_counter
 
    // Open the *test* input file
    fp = fopen("./TestGPX.gpx", "r");
@@ -58,34 +62,30 @@ int parse_file_line(char *ptr_file_name)
    {
       // Read the first string into the buffer, echo result
       fgets(buffer, 256, fp);
-      printf("Line: %d, %s",counter,buffer);
+      // printf("Line: %d, %s",counter,buffer);
 
       // Strip leading spaces, echo result
       strip_leading_spaces(buffer);
-      if(strncmp(buffer,"<time",5) == 0)
-      {
-         printf("Line: %d, %s\n",counter,buffer);
-      }
       //
       // Check if current line is a "<time" tag
       //
       if(strncmp(buffer,"<time",5) == 0)
       {
          strncpy(time_buffer, buffer + 17, 6);
-         printf("%s\n",time_buffer);
+         // printf("%s\n",time_buffer);
 
          // Now our time_buffer holds a 6-char string with hrs, minutes, seconds
          // let's convert to seconds
          // 
          strncpy(hour_char_type, time_buffer, 2);
          hour_char_type[2] = '\0';
-         printf("%s\n",hour_char_type);
+         // printf("%s\n",hour_char_type);
          strncpy(minute_char_type, time_buffer + 2, 2);
          minute_char_type[2] = '\0';
-         printf("%s\n",minute_char_type);
+         // printf("%s\n",minute_char_type);
          strncpy(second_char_type, time_buffer + 4, 2);
          second_char_type[2] = '\0';
-         printf("%s\n",second_char_type);
+         // printf("%s\n",second_char_type);
 
          hour_ret = strtol(hour_char_type, &ptr_conv, 10);
          //      printf("%ld\n",hour_ret);
@@ -94,10 +94,25 @@ int parse_file_line(char *ptr_file_name)
 
          // convert all items to seconds
          total_seconds = hour_ret * 3600 + minute_ret * 60 + second_ret;
-         printf("%d\n\n",total_seconds);
+         // printf("%d\n\n",total_seconds);
 
          time_counter++;
-      }
+      
+         do
+         {     
+            fgets(buffer,256,fp);
+            strip_leading_spaces(buffer);
+         }while(strncmp(buffer,"<gpxtpxhr",9)); // Loop until buffer is HR tag
+         do
+         {
+            hr_counter++;
+         }while(strncmp(buffer + 10 + hr_counter, "<",1));
+         strncpy(hr_buffer, buffer+10,hr_counter);
+         hr_buffer[hr_counter] = '\0';
+         hr = strtol(hr_buffer, &ptr_conv, 10);
+         hr_counter = 0;
+      }         
+      
 
       // increment counter
       counter++;
