@@ -16,7 +16,7 @@ char* strip_leading_spaces(char *input);
 /*                                                                       */
 /*************************************************************************/
 
-int parse_file_line(char *ptr_file_name, int *raw_data[1000][2])
+int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
 {
    FILE *fp;
    char individual_line;
@@ -58,7 +58,7 @@ int parse_file_line(char *ptr_file_name, int *raw_data[1000][2])
    
    printf("Reading file...\n");
 //   while(fgets(buffer, 256, fp))
-   while(counter < 200)
+   while(counter < 20)
    {
       // Read the first string into the buffer, echo result
       fgets(buffer, 256, fp);
@@ -93,11 +93,10 @@ int parse_file_line(char *ptr_file_name, int *raw_data[1000][2])
          second_ret = strtol(second_char_type, &ptr_conv, 10);
 
          // convert all items to seconds
-         total_seconds = hour_ret * 3600 + minute_ret * 60 + second_ret;
+         raw_time[time_counter] = hour_ret * 3600 + minute_ret * 60 + second_ret;
          // printf("%d\n\n",total_seconds);
-         time_counter++;
-         raw_data[time_counter-1][0] = total_seconds;
-               
+         
+                        
          do
          {     
             fgets(buffer,256,fp);
@@ -109,9 +108,10 @@ int parse_file_line(char *ptr_file_name, int *raw_data[1000][2])
          }while(strncmp(buffer + 10 + hr_counter, "<",1));
          strncpy(hr_buffer, buffer+10,hr_counter);
          hr_buffer[hr_counter] = '\0';
-         hr = strtol(hr_buffer, &ptr_conv, 10);
+         raw_hr[time_counter] = strtol(hr_buffer, &ptr_conv, 10);
          hr_counter = 0;
-         raw_data[time_counter-1][1] = hr;
+         printf("%i  %i\n", total_seconds, hr);
+         time_counter++;
       }         
       
 

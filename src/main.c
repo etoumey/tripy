@@ -3,7 +3,7 @@
 void get_input(char *ptr_file_name, float *ptr_lthr);
 void calc_hr_zones(float *ptr_lthr, float *zone_array);
 void file_process(float *raw_data, char *ptr_file_name);
-char parse_file_file(char *ptr_file_name, int *raw_data);
+char parse_file_file(char *ptr_file_name, int *raw_time, int *raw_hr);
 
 /*************************************************************************/
 /*                                                                       */
@@ -22,7 +22,8 @@ int main(void)
    char file_name[30] = { '\0' };
    float lthr;
    float zone_array[6];
-   int raw_data[1000][2];
+   int raw_time[20] = {0};
+   int raw_hr[20] = {0};
    int x,y;
    //
    // GET INPUT: LTHR, desired *.fit file name
@@ -48,10 +49,10 @@ int main(void)
    //
 //   file_process(&raw_data[1000][2], &file_name[30]);
 
-   parse_file_line(&file_name[30], &raw_data);
-   for(x=0; x<50; x++)
+   parse_file_line(&file_name[30], &raw_time, &raw_hr);
+   for(x=0; x<10; x++)
    {
-      printf("%i %i\n", raw_data[x][0], raw_data[x][1]);
+      printf("raw_data[%i]: %i %i\n", x, raw_time[x], raw_hr[x]);
       
    }
 
