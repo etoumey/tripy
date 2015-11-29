@@ -16,7 +16,7 @@ char* strip_leading_spaces(char *input);
 /*                                                                       */
 /*************************************************************************/
 
-int parse_file_line(char *ptr_file_name)
+int parse_file_line(char *ptr_file_name, int *raw_data[1000][2])
 {
    FILE *fp;
    char individual_line;
@@ -95,9 +95,9 @@ int parse_file_line(char *ptr_file_name)
          // convert all items to seconds
          total_seconds = hour_ret * 3600 + minute_ret * 60 + second_ret;
          // printf("%d\n\n",total_seconds);
-
          time_counter++;
-      
+         raw_data[time_counter-1][0] = total_seconds;
+               
          do
          {     
             fgets(buffer,256,fp);
@@ -111,6 +111,7 @@ int parse_file_line(char *ptr_file_name)
          hr_buffer[hr_counter] = '\0';
          hr = strtol(hr_buffer, &ptr_conv, 10);
          hr_counter = 0;
+         raw_data[time_counter-1][1] = hr;
       }         
       
 
