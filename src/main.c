@@ -22,8 +22,8 @@ int main(void)
    char file_name[30] = { '\0' };
    float lthr;
    float zone_array[6];
-   int raw_time[20] = {0};
-   int raw_hr[20] = {0};
+   int raw_time[200] = {0};
+   int raw_hr[200] = {0};
    int x,y;
    //
    // GET INPUT: LTHR, desired *.fit file name
