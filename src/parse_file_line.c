@@ -28,7 +28,6 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
    char time_buffer[8];
    char time_buffer_nc[6];
    char hr_buffer[4];  //hope HR is fewer than 3 characters LOL
-   int i,j;
 
    // variables for converting string to int
    long hour_ret;
@@ -48,8 +47,6 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
    int hr_counter;  //counter for how many characters in HR
    //
 
-   i = 0;
-   j = 0;
    time_counter = 0;
    hr_counter = 0;  //initialize hr_counter
 
@@ -96,16 +93,24 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
          total_seconds = hour_ret * 3600 + minute_ret * 60 + second_ret;
          // printf("%d\n\n",total_seconds);
          
-                        
+
+         // After converting the current time string, loop through the following lines
+         // until finding the HR tag
          do
          {     
             fgets(buffer,256,fp);
             strip_leading_spaces(buffer);
          }while(strncmp(buffer,"<gpxtpxhr",9)); // Loop until buffer is HR tag
+
+         // Once the line containing HR info is in the buffer, increment the HR counter 
+         // until reaching the "<" part of "</elapsed>" tag. This way, we know if the HR
+         // is 2 or 3 characters
          do
          {
             hr_counter++;
          }while(strncmp(buffer + 10 + hr_counter, "<",1));
+
+         // Copy the HR to a separate HR char array
          strncpy(hr_buffer, buffer+10,hr_counter);
          //hr_buffer[hr_counter+1] = '\0';
          raw_time[time_counter] = total_seconds;
@@ -116,7 +121,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
       }         
       
 
-      // increment counter
+      // increment line counter
       counter++;
    }
 
