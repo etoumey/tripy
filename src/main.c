@@ -28,16 +28,16 @@ int main(void)
    //
    // GET INPUT: LTHR, desired *.fit file name
    //
-   get_input(&file_name[30], &lthr);
+//   get_input(&file_name[30], &lthr);
    // echo your input   
 //   printf("\nFile name   : %s", &file_name);
 //   printf("\nFile length : %zu",sizeof(file_name));   
-   printf("\nYour lthr is: %f BPM",lthr);
+//   printf("\nYour lthr is: %f BPM",lthr);
 
    //
    // CALCULATE HR ZONES: hr zones from Joe Friel
    // 
-   calc_hr_zones(&lthr, zone_array);
+//   calc_hr_zones(&lthr, zone_array);
    
    //
    // DECODE *.FIT FILE: using "fitSDK"
