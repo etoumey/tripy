@@ -47,6 +47,10 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
    int hr_counter;  //counter for how many characters in HR
    //
 
+   // variables for time subtracter
+   int start_time;
+
+
    time_counter = 0;
    hr_counter = 0;  //initialize hr_counter
 
@@ -92,7 +96,15 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
          // convert all items to seconds
          total_seconds = hour_ret * 3600 + minute_ret * 60 + second_ret;
          // printf("%d\n\n",total_seconds);
-         
+       
+         // ** ASSUMPTION ABOUT *.GPX FILE ALERT **
+         // The first "<time>" tag is by itself at the top of the file and
+         // isn't associated with any data. If that is the time tag that 
+         // we read, store this as the "start_time"
+         if(time_counter < 1)
+         {
+            start_time = total_seconds;
+         }  
 
          // After converting the current time string, loop through the following lines
          // until finding the HR tag
@@ -113,7 +125,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
          // Copy the HR to a separate HR char array
          strncpy(hr_buffer, buffer+10,hr_counter);
          //hr_buffer[hr_counter+1] = '\0';
-         raw_time[time_counter] = total_seconds;
+         raw_time[time_counter] = total_seconds - start_time;
          hr = strtol(hr_buffer, &ptr_conv, 10);
          raw_hr[time_counter] = hr;
          hr_counter = 0;
@@ -129,6 +141,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
    // Close input file stream
    fclose(fp);
 
+   printf("...Done reading file.\n");
    return(0);
 }
 
