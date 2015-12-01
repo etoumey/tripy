@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+void sort_zone(int interval_time, int raw_hr, float *zone_array);
 /*************************************************************************/
 /*                                                                       */
 /*  File:         classify_heartrate.c                                   */
@@ -16,20 +17,78 @@
 /*                                                                       */
 /*************************************************************************/
 
-void classify_heartrate(int raw_time[], int raw_hr[])
+void classify_heartrate(int raw_time[], int raw_hr[], float zone_array[])
 {
-   int ii;
+   int ii, jj;
    int t_1, t_p1;
-
+   int interval_time;
+   int zone_bin[7] = {0};
 
    // replace 200 with a computed string length
-   for(ii = 0; ii < 200; ii++)
+   for(ii = 0; ii < 200 - 1; ii++)
    { 
       //
       t_1 = raw_time[ii];
       t_p1 = raw_time[ii + 1];
-//      printf("%d\n",raw_hr[ii]);
-      printf("%d :: %d\n",t_1,t_p1);
+
+      interval_time = t_p1 - t_1;
+      //printf("%d :: %d\n",t_1,t_p1);
+      
+//      sort_zone(interval_time, raw_hr[ii], zone_array);
+      for(jj = 0; jj < 7; jj++)
+      {
+         if(raw_hr[ii] < zone_array[jj])
+         {
+            zone_bin[1] = zone_bin[1] + interval_time;
+            printf("%d\n",zone_bin[1]);
+         }
+         else if(raw_hr[ii] < zone_array[jj])
+         {
+            zone_bin[2] = zone_bin[2] + interval_time;
+         }
+         else if(raw_hr[ii] < zone_array[jj])
+         {
+            zone_bin[3] = zone_bin[3] + interval_time;
+         }
+         else if(raw_hr[ii] < zone_array[jj])
+         {
+            zone_bin[3] = zone_bin[3] + interval_time;
+         }
+         else if(raw_hr[ii] < zone_array[jj])
+         {
+            zone_bin[4] = zone_bin[4] + interval_time;
+         }
+         else if(raw_hr[ii] < zone_array[jj])
+         {
+            zone_bin[5] = zone_bin[5] + interval_time;
+         }
+         else if(raw_hr[ii] < zone_array[jj])
+         {
+            zone_bin[6] = zone_bin[6] + interval_time;
+         }
+         else if(raw_hr[ii] < zone_array[jj])
+         {
+            zone_bin[7] = zone_bin[7] + interval_time;
+         }
+      }
+      interval_time = 0; 
    }
+   for(ii = 0; ii < 7;ii++)
+   {
+      printf("%d\n",zone_bin[ii]);
+   }
+   
 
 }
+
+/*
+void sort_zone(int interval_time, int raw_hr, float *zone_array[])
+{
+   int ii;
+
+   for(ii = 0; ii < 6; ii++)
+   {
+      if(raw_hr < zone_
+   }
+}
+*/

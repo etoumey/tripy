@@ -4,7 +4,7 @@ void get_input(char *ptr_file_name, float *ptr_lthr);
 void calc_hr_zones(float *ptr_lthr, float *zone_array);
 void file_process(float *raw_data, char *ptr_file_name);
 char parse_file_file(char *ptr_file_name, int *raw_time, int *raw_hr);
-void classify_heartrate(int raw_time[], int raw_hr[]);
+void classify_heartrate(int raw_time[], int raw_hr[], float zone_array[]);
 
 /*************************************************************************/
 /*                                                                       */
@@ -38,8 +38,12 @@ int main(void)
    //
    // CALCULATE HR ZONES: hr zones from Joe Friel
    // 
-//   calc_hr_zones(&lthr, zone_array);
-   
+   lthr = 185.0; // [bpm]
+   calc_hr_zones(&lthr, zone_array);
+/*   for (ii = 0;ii < 6;ii++)
+   {
+      printf("\n%f\n",zone_array[ii]);
+   }*/
    //
    // DECODE *.FIT FILE: using "fitSDK"
    //
@@ -61,7 +65,7 @@ int main(void)
    //
    // SORT HR: figure out time spent in each zone
    //
-   classify_heartrate(raw_time, raw_hr);
+   classify_heartrate(raw_time, raw_hr, zone_array);
    //
    // CALCULATE TSS: using formula from excel sheet
    //
