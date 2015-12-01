@@ -38,7 +38,7 @@ int main(void)
    //
    // CALCULATE HR ZONES: hr zones from Joe Friel
    // 
-   lthr = 185.0; // [bpm]
+   lthr = 185.0; // [bpm], hard-coded for testing 
    calc_hr_zones(&lthr, zone_array);
 /*   for (ii = 0;ii < 6;ii++)
    {
