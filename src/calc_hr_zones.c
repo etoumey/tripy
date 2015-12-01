@@ -32,6 +32,6 @@ void calc_hr_zones(float *ptr_lthr, float *ptr_zone_array)
    {
       // possible ceiling function
       ptr_zone_array[ii] = ceil(zone_percent[ii] * *ptr_lthr);
-      printf("\n%f\n",ptr_zone_array[ii]);
+//      printf("\n%f\n",ptr_zone_array[ii]);
    }
 }
