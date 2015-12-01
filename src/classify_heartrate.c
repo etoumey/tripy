@@ -14,6 +14,9 @@ void sort_zone(int interval_time, int raw_hr, float *zone_array);
 /*                                time values                            */
 /*                raw_hr          memory address of array containing the */
 /*                                corresponding HR values                */
+/*                zone_array      contains the MAXIMUM value for each    */
+/*                                of the 7 zones. E.g., zone_array[0] is */
+/*                                the maximum value for zone 1           */
 /*                                                                       */
 /*************************************************************************/
 
@@ -34,6 +37,10 @@ void classify_heartrate(int raw_time[], int raw_hr[], float zone_array[])
       t_p1 = raw_time[ii + 1];
 
       interval_time = t_p1 - t_1;
+
+/*
+
+
       
       // Sort the HR at the current time -- add the elapsed time (between data recording points)
       // to the appropriate bin. Eventually functionalize with:
@@ -75,13 +82,17 @@ void classify_heartrate(int raw_time[], int raw_hr[], float zone_array[])
             zone_bin[7] = zone_bin[7] + interval_time;
          }
       }
+*/
       interval_time = 0; // reset 
    }
+/*
    // ** test print ** 
    for(ii = 0; ii < 7;ii++)
    {
       printf("%d\n",zone_bin[ii]);
    }
+
+*/
 
 }
 
