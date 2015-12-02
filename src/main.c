@@ -1,10 +1,10 @@
 #include <stdio.h>
-
+#define SIZE 10000
 void get_input(char *ptr_file_name, float *ptr_lthr);
 void calc_hr_zones(float *ptr_lthr, float *zone_array);
 void file_process(float *raw_data, char *ptr_file_name);
 char parse_file_file(char *ptr_file_name, int *raw_time, int *raw_hr);
-void classify_heartrate(int raw_time[], int raw_hr[], float zone_array[]);
+void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array);
 
 /*************************************************************************/
 /*                                                                       */
@@ -20,11 +20,11 @@ int main(void)
 {
    // Variable declaration
    int ii;
-   char file_name[30] = { '\0' };
+   char file_name [30] = { '\0' };
    float lthr;
-   float zone_array[6];
-   int raw_time[200] = {0};
-   int raw_hr[200] = {0};
+   float zone_array [6];
+   int raw_time [SIZE] = {0};
+   int raw_hr [SIZE] = {0};
    int x,y;
    //
    // GET INPUT: LTHR, desired *.fit file name
@@ -38,7 +38,7 @@ int main(void)
    //
    // CALCULATE HR ZONES: hr zones from Joe Friel
    // 
-   lthr = 185.0; // [bpm], hard-coded for testing 
+   lthr = 145.0; // [bpm], hard-coded for testing 
    calc_hr_zones(&lthr, zone_array);
 /*   for (ii = 0;ii < 6;ii++)
    {
@@ -55,11 +55,11 @@ int main(void)
 //   file_process(&raw_data[1000][2], &file_name[30]);
 
    parse_file_line(&file_name[30], &raw_time, &raw_hr);
-   for(x=0; x<10; x++)
-   {
-      printf("raw_data[%i]: %i %i\n", x, raw_time[x], raw_hr[x]);
+   //for(x=0; x<10; x++)
+   //{
+   //   printf("raw_data[%i]: %i %i\n", x, raw_time[x], raw_hr[x]);
       
-   }
+   //}
 
 
    //

@@ -57,7 +57,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
    
    printf("Reading file...\n");
 //   while(fgets(buffer, 256, fp))
-   while(counter < 200)
+   while(!feof(fp))
    {
       // Read the first string into the buffer, echo result
       fgets(buffer, 256, fp);
@@ -130,6 +130,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
          raw_time[time_counter] = total_seconds - start_time;
          hr = strtol(hr_buffer, &ptr_conv, 10);
          raw_hr[time_counter] = hr;
+         //printf("%d hr %d time", hr, start_time);
          hr_counter = 0;
          time_counter++;
       }         
@@ -138,7 +139,8 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
       // increment line counter
       counter++;
    }
-
+   //raw_time[time_counter] = '\0';
+   //raw_hr[time_counter] = '\0'; //signify end of dataset
 
    // Close input file stream
    fclose(fp);
