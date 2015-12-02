@@ -139,8 +139,8 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
       // increment line counter
       counter++;
    }
-   //raw_time[time_counter] = '\0';
-   //raw_hr[time_counter] = '\0'; //signify end of dataset
+   raw_time[time_counter] = '\0';
+   raw_hr[time_counter] = '\0'; //signify end of dataset
 
    // Close input file stream
    fclose(fp);

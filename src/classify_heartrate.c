@@ -31,7 +31,7 @@ void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array)
    // Loop throught the time array. At each execution, store the current time and the next time 
    // to 2 variables and compute the difference. This is the time spent in the zone.
    // replace 200 with a computed string length
-   while(ii < 140)
+   while(raw_time[ii]!= '\0')
    { 
       // Save the current and plus 1 times
       t_1 = raw_time[ii-1];
