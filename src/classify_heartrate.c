@@ -20,13 +20,12 @@ void sort_zone(int interval_time, int *raw_hr, float *zone_array);
 /*                                                                       */
 /*************************************************************************/
 
-void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array)
+void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array, int *zone_bin)
 {
    int ii = 1;
    int jj;
    int t_1, t_p1;
    int interval_time;
-   int zone_bin[7] = {0};
    float zone_sum_test = 0;
 
    int interval_time_test = 0;

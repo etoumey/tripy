@@ -4,7 +4,7 @@ void get_input(char *ptr_file_name, float *ptr_lthr);
 void calc_hr_zones(float *ptr_lthr, float *zone_array);
 void file_process(float *raw_data, char *ptr_file_name);
 char parse_file_file(char *ptr_file_name, int *raw_time, int *raw_hr);
-void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array);
+void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array, int *zone_bin);
 void calc_stress(int *zone_bin);
 
 /*************************************************************************/
@@ -27,6 +27,7 @@ int main(void)
    int raw_time [SIZE] = {0};
    int raw_hr [SIZE] = {0};
    int x,y;
+   int zone_bin[7] = {0};
    //
    // GET INPUT: LTHR, desired *.fit file name
    //
@@ -66,7 +67,13 @@ int main(void)
    //
    // SORT HR: figure out time spent in each zone
    //
-   classify_heartrate(raw_time, raw_hr, zone_array);
+   classify_heartrate(raw_time, raw_hr, zone_array, zone_bin);
+   // ** test print ** 
+  /* for(ii = 0; ii < 7;ii++)
+   {
+      printf("%i sec in zone %f \n",zone_bin[ii], zone_array[ii]);
+   }*/
+
    //
    // CALCULATE STRESS: using formula from excel sheet
    //
