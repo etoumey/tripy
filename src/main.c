@@ -5,6 +5,7 @@ void calc_hr_zones(float *ptr_lthr, float *zone_array);
 void file_process(float *raw_data, char *ptr_file_name);
 char parse_file_file(char *ptr_file_name, int *raw_time, int *raw_hr);
 void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array);
+void calc_stress(int *zone_bin);
 
 /*************************************************************************/
 /*                                                                       */
@@ -67,9 +68,9 @@ int main(void)
    //
    classify_heartrate(raw_time, raw_hr, zone_array);
    //
-   // CALCULATE TSS: using formula from excel sheet
+   // CALCULATE STRESS: using formula from excel sheet
    //
-
+   calc_stress(zone_bin);
    //
    // WRITE RESULTS: to screen, or file 
    //
