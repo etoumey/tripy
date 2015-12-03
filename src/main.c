@@ -5,7 +5,7 @@ void calc_hr_zones(float *ptr_lthr, float *zone_array);
 void file_process(float *raw_data, char *ptr_file_name);
 char parse_file_file(char *ptr_file_name, int *raw_time, int *raw_hr);
 void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array, int *zone_bin);
-void calc_stress(int *zone_bin);
+void calc_stress(int *zone_bin, float *total_stress);
 
 /*************************************************************************/
 /*                                                                       */
@@ -28,6 +28,7 @@ int main(void)
    int raw_hr [SIZE] = {0};
    int x,y;
    int zone_bin[7] = {0};
+   float total_stress = 0.;
    //
    // GET INPUT: LTHR, desired *.fit file name
    //
@@ -77,8 +78,9 @@ int main(void)
    //
    // CALCULATE STRESS: using formula from excel sheet
    //
-   calc_stress(zone_bin);
-   //
+   calc_stress(zone_bin, &total_stress);
+   printf("%f\n",total_stress);   
+//
    // WRITE RESULTS: to screen, or file 
    //
   
