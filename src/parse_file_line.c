@@ -139,6 +139,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
       // increment line counter
       counter++;
    }
+   printf("%d\n",raw_time[time_counter - 1]);
    raw_time[time_counter] = '\0';
    raw_hr[time_counter] = '\0'; //signify end of dataset
 
