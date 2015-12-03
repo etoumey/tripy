@@ -28,6 +28,8 @@ void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array)
    int interval_time;
    int zone_bin[7] = {0};
    float zone_sum_test = 0;
+
+   int interval_time_test = 0;
    
    // Loop throught the time array. At each execution, store the current time and the next time 
    // to 2 variables and compute the difference. This is the time spent in the zone.
@@ -39,6 +41,7 @@ void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array)
       t_p1 = raw_time[ii];
 
       interval_time = t_p1 - t_1;
+      interval_time_test = interval_time_test + interval_time;
 
 //      printf("%d interval time %d raw hr\n", interval_time, raw_hr[ii]);
       
@@ -71,13 +74,9 @@ void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array)
       {
          zone_bin[5] = zone_bin[5] + interval_time;
       }
-      else if(raw_hr[ii-1] < zone_array[6])
-      {
-         zone_bin[6] = zone_bin[6] + interval_time;
-      }
       else
       {
-         zone_bin[7] = zone_bin[7] + interval_time;
+         zone_bin[6] = zone_bin[6] + interval_time;
       }
             
       ii++;
@@ -92,6 +91,7 @@ void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array)
    }
 
    printf("total time from zone bins: %f\n",zone_sum_test);
+   printf("total time from interval : %i\n",interval_time_test);
 
 }
 
