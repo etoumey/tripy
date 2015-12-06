@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-char* strip_leading_spaces(char *input);
+char* remove_leading_spaces_colons(char *input);
 
 /*************************************************************************/
 /*                                                                       */
@@ -13,6 +13,8 @@ char* strip_leading_spaces(char *input);
 /*                each <time> tag.                                       */
 /*                                                                       */
 /*  Inputs:       ptr_lthr        memory address of threshold HR         */
+/*                                                                       */
+/*  Subroutines:  remove_leading_spaces_colons                           */
 /*                                                                       */
 /*************************************************************************/
 
@@ -64,7 +66,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
       // printf("Line: %d, %s",counter,buffer);
 
       // Strip leading spaces, echo result
-      strip_leading_spaces(buffer);
+      remove_leading_spaces_colons(buffer);
       //
       // Check if current line is a "<time" tag
       //
@@ -110,7 +112,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
          do
          {     
             fgets(buffer,256,fp);
-            strip_leading_spaces(buffer);
+            remove_leading_spaces_colons(buffer);
          }while(strncmp(buffer,"<gpxtpxhr",9)); // Loop until buffer is HR tag
 
          // Once the line containing HR info is in the buffer, increment the HR counter 
@@ -139,7 +141,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
       // increment line counter
       counter++;
    }
-   printf("%d\n",raw_time[time_counter - 1]);
+   printf("Total seconds (from parsed file): %d\n",raw_time[time_counter - 1]);
    raw_time[time_counter] = '\0';
    raw_hr[time_counter] = '\0'; //signify end of dataset
 
@@ -150,22 +152,25 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
    return(0);
 }
 
-char* strip_leading_spaces(char *input)
+char* remove_leading_spaces_colons(char *input)
 {
-   int i,j;
+   int ii,jj;
 
-   i = 0;
-   j = 0;
+   ii = 0;
+   jj = 0;
 
-   while(input[i] != '\0')
+   while(input[ii] != '\0')
    {
-      // check if current pointer location is not equal to a space and colon
-      if(input[i] != ' ' && input[i] != ':')
+      // check if character at current pointer location is not equal to a space and colon
+      if(input[ii] != ' ' && input[ii] != ':')
       {
-         input[j++] = input[i];
+         // if yes, increment the "write" pointer jj and store the current value of the input
+         // string to the location of the "write" pointer 
+         input[jj++] = input[ii];
       }
-      i++;
+      ii++;
    }
-   input[j] = '\0';
+   // add NULL end-of-line character
+   input[jj] = '\0';
    return(input);
 }

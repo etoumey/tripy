@@ -79,7 +79,7 @@ int main(void)
    // CALCULATE STRESS: using formula from excel sheet
    //
    calc_stress(zone_bin, &total_stress);
-   printf("%f\n",total_stress);   
+   printf("Total stress [ndim]: %f\n",total_stress);   
 //
    // WRITE RESULTS: to screen, or file 
    //
