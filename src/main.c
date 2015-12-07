@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #define SIZE 20000
 void get_input(char *ptr_file_name, float *ptr_lthr);
 void calc_hr_zones(float *ptr_lthr, float *zone_array);
@@ -17,12 +18,12 @@ void calc_stress(int *zone_bin, float *total_stress);
 /*                                                                       */
 /*************************************************************************/
 
-int main(char *file_name[30], float lthr)
+int main(int argc, char *argv[])
 {
    // Variable declaration
    int ii;
- //  char file_name [30] = { '\0' };
-//   float lthr;
+//   char file_name [30] = { '\0' };
+   float lthr;
    float zone_array [6];
    int raw_time [SIZE] = {0};
    int raw_hr [SIZE] = {0};
@@ -32,6 +33,28 @@ int main(char *file_name[30], float lthr)
    //
    // GET INPUT: LTHR, desired *.fit file name
    //
+   if(argc != 2)
+   {
+      // Echo the instructions for specifying a file from cmd line
+      printf("To calculate stress for a file, use: '%s filename'\n", argv[0]);
+      printf("For testing purposes, we will load 'TestGPX.gpx' anyway.\n");
+      // *** HACK FOR TESTING *** 
+      // If you run the program w/o supplying a file name, the following line
+      // sets it to the test *.gpx file automatically.
+      argv[1] = "TestGPX.gpx";
+   }
+   else
+   { 
+      FILE *file = fopen( argv[1], "r");
+      if(file == 0) 
+      {
+         // If the file pointer is null, terminate the program
+         printf("File not found. Terminating...\n");
+         fclose(file);
+         exit(EXIT_SUCCESS);
+      }
+      
+   } 
 //   get_input(&file_name[30], &lthr);
    // echo your input   
 //   printf("\nFile name   : %s", &file_name);
@@ -57,7 +80,7 @@ int main(char *file_name[30], float lthr)
    //
 //   file_process(&raw_data[1000][2], &file_name[30]);
 
-   parse_file_line(&file_name[30], &raw_time, &raw_hr);
+   parse_file_line(argv[1], &raw_time, &raw_hr);
    //for(x=0; x<10; x++)
    //{
    //   printf("raw_data[%i]: %i %i\n", x, raw_time[x], raw_hr[x]);
