@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #define SIZE 20000
 void get_input(char *ptr_file_name, float *ptr_lthr);
@@ -22,7 +23,7 @@ int main(int argc, char *argv[])
 {
    // Variable declaration
    int ii;
-//   char file_name [30] = { '\0' };
+   char file_name[30] = { '\0' };
    float lthr;
    float zone_array [6];
    int raw_time [SIZE] = {0};
@@ -41,7 +42,7 @@ int main(int argc, char *argv[])
       // *** HACK FOR TESTING *** 
       // If you run the program w/o supplying a file name, the following line
       // sets it to the test *.gpx file automatically.
-      argv[1] = "TestGPX.gpx";
+      strcpy(file_name, "TestGPX.gpx");      
    }
    else
    { 
@@ -80,7 +81,7 @@ int main(int argc, char *argv[])
    //
 //   file_process(&raw_data[1000][2], &file_name[30]);
 
-   parse_file_line(argv[1], &raw_time, &raw_hr);
+   parse_file_line(file_name, &raw_time, &raw_hr);
    //for(x=0; x<10; x++)
    //{
    //   printf("raw_data[%i]: %i %i\n", x, raw_time[x], raw_hr[x]);
