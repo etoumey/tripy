@@ -17,12 +17,12 @@ void calc_stress(int *zone_bin, float *total_stress);
 /*                                                                       */
 /*************************************************************************/
 
-int main(void)
+int main(char *file_name[30], float lthr)
 {
    // Variable declaration
    int ii;
-   char file_name [30] = { '\0' };
-   float lthr;
+ //  char file_name [30] = { '\0' };
+//   float lthr;
    float zone_array [6];
    int raw_time [SIZE] = {0};
    int raw_hr [SIZE] = {0};

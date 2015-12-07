@@ -53,8 +53,8 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
    hr_counter = 0;  //initialize hr_counter
 
    // Open the *test* input file
-   fp = fopen("./TestGPX.gpx", "r");
-   
+//   fp = fopen("./TestGPX.gpx", "r");
+   fp = fopen(ptr_file_name,"r"); 
    printf("Reading file...\n");
 //   while(fgets(buffer, 256, fp))
    while(!feof(fp))
