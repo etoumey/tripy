@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
       {
          // If the file pointer is null, terminate the program
          printf("File not found. Terminating...\n");
-         fclose(file);
+        // fclose(file);
          exit(EXIT_SUCCESS);
       }
       else
