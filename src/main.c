@@ -54,7 +54,10 @@ int main(int argc, char *argv[])
          fclose(file);
          exit(EXIT_SUCCESS);
       }
-      
+      else
+      {
+         strcpy(file_name,argv[1]);
+      }
    } 
 //   get_input(&file_name[30], &lthr);
    // echo your input   
