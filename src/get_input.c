@@ -17,7 +17,28 @@
 
 void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
 {
+   int r;
+   char is_string_buffer[30];
    //
+   if(argc == 1)
+   {
+      printf("\nEnter file name : ");
+      fgets(ptr_file_name, 255, stdin);
+
+      printf("\nEnter LTHR [bpm]:");
+      scanf("%f", ptr_lthr);
+   }
+
+   if(argc == 2)
+   {
+      
+      r = sscanf(argv[1], "%s", is_string_buffer); 
+      if(r == 1)
+      {
+         printf("cmd line arg is string\n");
+      }
+   }
+
    printf("argc value in get_input: %d\n",argc);
 
    if(argc != 2)
