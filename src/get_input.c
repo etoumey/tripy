@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /*************************************************************************/
@@ -14,10 +15,39 @@
 /*                                                                       */
 /*************************************************************************/
 
-void get_input(char *ptr_file_name, float *ptr_lthr)
+void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
 {
    //
-   int input_check = 0;
+   printf("argc value in get_input: %d\n",argc);
+
+   if(argc != 2)
+   {
+      // Echo the instructions for specifying a file from cmd line
+      printf("To calculate stress for a file, use: '%s filename'\n", argv[0]);
+      printf("For testing purposes, we will load 'TestGPX.gpx' anyway.\n");
+      // *** HACK FOR TESTING *** 
+      // If you run the program w/o supplying a file name, the following line
+      // sets it to the test *.gpx file automatically.
+      strcpy(ptr_file_name, "TestGPX.gpx");      
+   }
+   else
+   { 
+      FILE *file = fopen( argv[1], "r");
+      if(file == 0) 
+      {
+         // If the file pointer is null, terminate the program
+         printf("File not found. Terminating...\n");
+        // fclose(file);
+         exit(EXIT_SUCCESS);
+      }
+      else
+      {
+         strcpy(ptr_file_name,argv[1]);
+      }
+   } 
+
+   printf("input file name before exiting get_input: %s\n",ptr_file_name);
+/*   int input_check = 0;
     
    while (input_check == 0)
    {
@@ -54,5 +84,6 @@ void get_input(char *ptr_file_name, float *ptr_lthr)
         *ptr_lthr = 0;
       }
    }
+*/
 }
 

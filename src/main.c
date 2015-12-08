@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #define SIZE 20000
-void get_input(char *ptr_file_name, float *ptr_lthr);
+void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv);
 void calc_hr_zones(float *ptr_lthr, float *zone_array);
 void file_process(float *raw_data, char *ptr_file_name);
 char parse_file_file(char *ptr_file_name, int *raw_time, int *raw_hr);
@@ -34,34 +34,9 @@ int main(int argc, char *argv[])
    //
    // GET INPUT: LTHR, desired *.fit file name
    //
-   if(argc != 2)
-   {
-      // Echo the instructions for specifying a file from cmd line
-      printf("To calculate stress for a file, use: '%s filename'\n", argv[0]);
-      printf("For testing purposes, we will load 'TestGPX.gpx' anyway.\n");
-      // *** HACK FOR TESTING *** 
-      // If you run the program w/o supplying a file name, the following line
-      // sets it to the test *.gpx file automatically.
-      strcpy(file_name, "TestGPX.gpx");      
-   }
-   else
-   { 
-      FILE *file = fopen( argv[1], "r");
-      if(file == 0) 
-      {
-         // If the file pointer is null, terminate the program
-         printf("File not found. Terminating...\n");
-        // fclose(file);
-         exit(EXIT_SUCCESS);
-      }
-      else
-      {
-         strcpy(file_name,argv[1]);
-      }
-   } 
-//   get_input(&file_name[30], &lthr);
+   get_input(file_name, &lthr, argc, argv);
    // echo your input   
-//   printf("\nFile name   : %s", &file_name);
+   printf("\nFile name   : %s\n", file_name);
 //   printf("\nFile length : %zu",sizeof(file_name));   
 //   printf("\nYour lthr is: %f BPM",lthr);
 
