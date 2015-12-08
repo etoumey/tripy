@@ -73,8 +73,8 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
       if(strncmp(buffer,"<time",5) == 0)
       {
          strncpy(time_buffer, buffer + 17, 6);
-         // printf("%s\n",time_buffer);
-
+         //printf("%s\n",time_buffer);
+         //getchar();
          // Now our time_buffer holds a 6-char string with hrs, minutes, seconds
          // let's convert to seconds
          // 
