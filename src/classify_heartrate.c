@@ -44,7 +44,6 @@ void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array, int *zone
 
 //      printf("%d interval time %d raw hr\n", interval_time, raw_hr[ii]);
       
-      
       // Sort the HR at the current time -- add the elapsed time (between data recording points)
       // to the appropriate bin. Eventually functionalize with:
       // 
