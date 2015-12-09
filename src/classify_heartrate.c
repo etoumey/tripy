@@ -45,7 +45,7 @@ void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array, int *zone
 
       if(interval_time < 1 || interval_time > 10)
       {
-         printf("line numver is: %d\n",jj);
+         printf("line numver is: %d, interval_time is: %d\n",jj,interval_time);
 
       }
       else{
