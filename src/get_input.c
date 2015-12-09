@@ -59,8 +59,30 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
          *ptr_lthr = strtol(argv[1], &ptr_conv, 10);
       }
    }
+   lthr_flag = 0;
+   if(argc == 3)
+   // the user entered both arguments. Find out which is which
+   {
+      if(strspn(argv[1], "0123456789.") == strlen(argv[1]))
+      {
+         printf("string only numbers\n");
+         lthr_flag = 1;
+      }      
+      if(lthr_flag == 0)
+      {
+         strcpy(ptr_file_name, argv[1]);
+         *ptr_lthr = strtol(argv[2], &ptr_conv, 10);
+      }
+      if(lthr_flag == 1)
+      {
+         *ptr_lthr = strtol(argv[1], &ptr_conv, 10);
+         strcpy(ptr_file_name, argv[2]);
+      }
+   } 
 
-   
+   printf("File name: %s\n", ptr_file_name);
+   printf("LTHR     : %f\n", *ptr_lthr);
+
 
    printf("argc value in get_input: %d\n",argc);
 
