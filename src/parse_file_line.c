@@ -49,7 +49,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
    int hr_counter;  //counter for how many characters in HR
 
    int start_time; // used to store start time in seconds
-
+   int timer_reset_value;
 
    time_counter = 0;
    hr_counter = 0;  //initialize hr_counter
@@ -129,7 +129,15 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
 
          // Normalize times by subtracting the start_time; this way the times in the 
          // array start at 0
-         raw_time[time_counter] = total_seconds - start_time;
+         if(total_seconds - start_time < 0)
+         {
+            timer_reset_value = 86399;
+         }
+         else
+         {
+            timer_reset_value = 0;
+         }
+         raw_time[time_counter] = total_seconds - start_time + timer_reset_value;
          hr = strtol(hr_buffer, &ptr_conv, 10);
          raw_hr[time_counter] = hr;
         // printf("%d hr %d time", hr, raw_time[time_counter]);
