@@ -30,6 +30,7 @@ void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array, int *zone
 
    int interval_time_test = 0;
    
+   jj = 0;
    // Loop throught the time array. At each execution, store the current time and the next time 
    // to 2 variables and compute the difference. This is the time spent in the zone.
    // replace 200 with a computed string length
@@ -42,6 +43,12 @@ void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array, int *zone
       interval_time = t_p1 - t_1;
       interval_time_test = interval_time_test + interval_time;
 
+      if(interval_time < 1 || interval_time > 10)
+      {
+         printf("line numver is: %d\n",jj);
+
+      }
+      else{
 //      printf("%d interval time %d raw hr\n", interval_time, raw_hr[ii]);
       
       // Sort the HR at the current time -- add the elapsed time (between data recording points)
@@ -76,9 +83,11 @@ void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array, int *zone
       {
          zone_bin[6] = zone_bin[6] + interval_time;
       }
-            
+   }
       ii++;
       interval_time = 0; // reset 
+
+      jj++;
    }
 
    // ** test print ** 

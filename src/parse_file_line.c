@@ -132,7 +132,8 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
          raw_time[time_counter] = total_seconds - start_time;
          hr = strtol(hr_buffer, &ptr_conv, 10);
          raw_hr[time_counter] = hr;
-         //printf("%d hr %d time", hr, start_time);
+        // printf("%d hr %d time", hr, raw_time[time_counter]);
+         //getchar();
          hr_counter = 0;
          time_counter++;
       }         
