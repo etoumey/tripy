@@ -18,7 +18,9 @@
 void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
 {
    int r;
+   int lthr_flag;
    char is_string_buffer[30];
+   char *ptr_conv;
    //
    if(argc == 1)
    {
@@ -30,14 +32,35 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
    }
 
    if(argc == 2)
+   // the user entered one argument. Find out if it is digits
    {
-      
-      r = sscanf(argv[1], "%s", is_string_buffer); 
-      if(r == 1)
+      if(strspn(argv[1], "0123456789.") == strlen(argv[1]))
       {
-         printf("cmd line arg is string\n");
+         printf("string only numbers\n");
+         lthr_flag = 1;
+      }      
+      else
+      {
+         printf("string has characters that are not numbers\n ");
+         lthr_flag = 0;
+      }
+      if(lthr_flag == 0)
+      {
+         printf("\nEnter LTHR [bpm]:");
+         scanf("%f", ptr_lthr);
+         //
+         strcpy(ptr_file_name, argv[1]);
+      }
+      else
+      {
+         printf("\nEnter file name : ");
+         fgets(ptr_file_name, 255, stdin);
+         //
+         *ptr_lthr = strtol(argv[1], &ptr_conv, 10);
       }
    }
+
+   
 
    printf("argc value in get_input: %d\n",argc);
 
