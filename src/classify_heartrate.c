@@ -43,7 +43,7 @@ void classify_heartrate(int *raw_time, int *raw_hr, float *zone_array, int *zone
       interval_time = t_p1 - t_1;
       interval_time_test = interval_time_test + interval_time;
 
-      if(interval_time < 1 || interval_time > 10)
+      if(interval_time < 1 || interval_time > 15)
       {
          printf("line numver is: %d, interval_time is: %d\n",jj,interval_time);
 
