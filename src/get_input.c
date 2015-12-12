@@ -84,8 +84,6 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
    printf("LTHR     : %f\n", *ptr_lthr);
 
 
-   printf("argc value in get_input: %d\n",argc);
-
    if(argc != 2)
    {
       // Echo the instructions for specifying a file from cmd line
@@ -113,43 +111,6 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
    } 
 
    printf("input file name before exiting get_input: %s\n",ptr_file_name);
-/*   int input_check = 0;
-    
-   while (input_check == 0)
-   {
-      // fix this with input checking
-      printf("\nEnter file name: ");
-      fgets(ptr_file_name, 255, stdin);
-      printf("\nFile name echo: %s", ptr_file_name);
-      input_check = 1;
-   }
-  
-   
-   //
-   input_check = 0;
-   while (input_check == 0)
-   {  
-      printf("\nEnter threshold heart rate in BPM: ");
-      if(scanf("%f", ptr_lthr))
-      {
-        //
-      	if (*ptr_lthr < 50 || *ptr_lthr > 215)
-      	{
-      	   printf("\n!!! Please enter a reasonable LTHR !!!\n\n");
-	   input_check = 0;
-      	}
-        else 
-        {
-           input_check = 1;
-        }
-      }
-      else
-      {
-	printf("enter a number yo");
-        input_check = 0;
-        *ptr_lthr = 0;
-      }
-   }
-*/
+
 }
 
