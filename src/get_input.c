@@ -21,7 +21,6 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
    int lthr_flag;
    char is_string_buffer[30];
    char *ptr_conv;
-   char file_name_buffer[30];
    //
    if(argc == 1)
    {
@@ -32,7 +31,7 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
       printf("\nEnter LTHR [bpm]:");
       scanf("%f", ptr_lthr);
    }
-/*
+
    else if(argc == 2)
    // the user entered one argument. Find out if it is digits
    {
@@ -57,11 +56,12 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
       {
          printf("\nEnter file name : ");
          fgets(ptr_file_name, 255, stdin);
+         ptr_file_name[strlen(ptr_file_name) - 1] = '\0';
          //
          *ptr_lthr = strtol(argv[1], &ptr_conv, 10);
       }
    }
-
+/*
    else if(argc == 3)
    // the user entered both arguments. Find out which is which
    lthr_flag = 0;
