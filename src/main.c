@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
    //
    // CALCULATE HR ZONES: hr zones from Joe Friel
    // 
-   lthr = 145.0; // [bpm], hard-coded for testing 
+   //lthr = 145.0; // [bpm], hard-coded for testing 
    calc_hr_zones(&lthr, zone_array);
 /*   for (ii = 0;ii < 6;ii++)
    {
