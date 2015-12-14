@@ -26,9 +26,8 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
    if(argc == 1)
    {
       printf("\nEnter file name : ");
-      fgets(file_name_buffer, 30, stdin);
-      file_name_buffer[strlen(file_name_buffer) - 1] = '\0';
-      strcpy(ptr_file_name, file_name_buffer);
+      fgets(ptr_file_name, 30, stdin);
+      ptr_file_name[strlen(ptr_file_name) - 1] = '\0';
 
       printf("\nEnter LTHR [bpm]:");
       scanf("%f", ptr_lthr);
