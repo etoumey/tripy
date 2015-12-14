@@ -98,21 +98,14 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
       strcpy(ptr_file_name, "test2.gpx");      
    }
    else
-   { 
-      FILE *file = fopen( argv[1], "r");
-      if(file == 0) 
-      {
-         // If the file pointer is null, terminate the program
-         printf("File not found. Terminating...\n");
-        // fclose(file);
-         exit(EXIT_SUCCESS);
-      }
-      else
-      {
-         strcpy(ptr_file_name,argv[1]);
-      }
-   } 
-*/
+*///   { 
+   FILE *file = fopen(ptr_file_name, "r");
+   if(file == 0) 
+   {
+      // If the file pointer is null, terminate the program
+      printf("File not found. Terminating...\n");
+      exit(EXIT_SUCCESS);
+   }
    printf("input file name before exiting get_input: %s\n",ptr_file_name);
 
 }
