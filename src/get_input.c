@@ -22,7 +22,7 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
    char is_string_buffer[30];
    char *ptr_conv;
    //
-   if(argc == 1)
+   if(argc < 2)
    {
       printf("\nEnter file name : ");
       fgets(ptr_file_name, 30, stdin);
@@ -61,11 +61,11 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
          *ptr_lthr = strtol(argv[1], &ptr_conv, 10);
       }
    }
-/*
+
    else if(argc == 3)
    // the user entered both arguments. Find out which is which
-   lthr_flag = 0;
    {
+      lthr_flag = 0;
       if(strspn(argv[1], "0123456789.") == strlen(argv[1]))
       {
          printf("string only numbers\n");
@@ -82,7 +82,6 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
          strcpy(ptr_file_name, argv[2]);
       }
    } 
-*/
    printf("File name: %s\n", ptr_file_name);
    printf("LTHR     : %f\n", *ptr_lthr);
 
