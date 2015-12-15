@@ -21,7 +21,10 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
    int lthr_flag;
    char is_string_buffer[30];
    char *ptr_conv;
+   char *extension_test;
+
    //
+   // If the user supplied no cmd line args, prompt them for both
    if(argc < 2)
    {
       printf("\nEnter file name : ");
@@ -32,8 +35,9 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
       scanf("%f", ptr_lthr);
    }
 
+   // The user supplied one argument. Find out if it containsi anything other than
+   // digits or decimals
    else if(argc == 2)
-   // the user entered one argument. Find out if it is digits
    {
       if(strspn(argv[1], "0123456789.") == strlen(argv[1]))
       {
@@ -62,8 +66,8 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
       }
    }
 
+   // The user supplied both arguments. Find out which is which
    else if(argc == 3)
-   // the user entered both arguments. Find out which is which
    {
       lthr_flag = 0;
       if(strspn(argv[1], "0123456789.") == strlen(argv[1]))
@@ -85,19 +89,11 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
    printf("File name: %s\n", ptr_file_name);
    printf("LTHR     : %f\n", *ptr_lthr);
 
-/*
-   if(argc != 2)
-   {
-      // Echo the instructions for specifying a file from cmd line
-      printf("To calculate stress for a file, use: '%s filename'\n", argv[0]);
-      printf("For testing purposes, we will load 'TestGPX.gpx' anyway.\n");
-      // *** HACK FOR TESTING *** 
-      // If you run the program w/o supplying a file name, the following line
-      // sets it to the test *.gpx file automatically.
-      strcpy(ptr_file_name, "test2.gpx");      
-   }
-   else
-*///   { 
+   //
+   // Input file validation
+   //
+
+   // test if the file exists in the working directory
    FILE *file = fopen(ptr_file_name, "r");
    if(file == 0) 
    {
@@ -105,7 +101,17 @@ void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv)
       printf("File not found. Terminating...\n");
       exit(EXIT_SUCCESS);
    }
+
+   // test if the lthr is *.gpx
+   extension_test = strrchr(ptr_file_name, '.');
+   printf("Extension: %s\n",extension_test);
+   if(strcmp(extension_test,".gpx") != 0)
+   {
+      printf("File does not end in .gpx. Please rename.\n");
+      printf("Terminating...\n");
+      exit(EXIT_SUCCESS);
+   }
+
    printf("input file name before exiting get_input: %s\n",ptr_file_name);
 
 }
-
