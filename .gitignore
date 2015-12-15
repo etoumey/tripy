@@ -7,3 +7,4 @@ bin/
 #
 *.log
 test_results.txt
+test_diff.txt
