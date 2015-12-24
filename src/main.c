@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#define SIZE 20000
+#define SIZE 200000
 void get_input(char *ptr_file_name, float *ptr_lthr, int argc, char **argv);
 void calc_hr_zones(float *ptr_lthr, float *zone_array);
 void file_process(float *raw_data, char *ptr_file_name);
