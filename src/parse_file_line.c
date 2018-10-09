@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 char* remove_leading_spaces_colons(char *input);
 
@@ -27,7 +28,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
    char *ptr_b;
    int counter = 1;
    char buffer_nw[256];
-   char time_buffer[8];
+   char time_buffer[6];
    char time_buffer_nc[6];
    char hr_buffer[4];  //hope HR is fewer than 3 characters LOL
 
@@ -63,7 +64,8 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
    {
       // Read the first string into the buffer, echo result
       fgets(buffer, 256, fp);
-      // printf("Line: %d, %s",counter,buffer);
+
+      //printf("Line: %d, %s",counter,buffer);
 
       // Strip leading spaces, echo result
       remove_leading_spaces_colons(buffer);
@@ -72,8 +74,8 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
       //
       if(strncmp(buffer,"<time",5) == 0)
       {
-         strncpy(time_buffer, buffer + 17, 6);
-         //printf("%s\n",time_buffer);
+         strncpy(time_buffer, buffer + 17, 6); //was 17
+         printf("%s\n",time_buffer);
          //getchar();
          // Now our time_buffer holds a 6-char string with hrs, minutes, seconds
          // let's convert to seconds
@@ -140,9 +142,8 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
          raw_time[time_counter] = total_seconds - start_time + timer_reset_value;
          hr = strtol(hr_buffer, &ptr_conv, 10);
          raw_hr[time_counter] = hr;
-        // printf("%d hr %d time", hr, raw_time[time_counter]);
+         //printf("%d hr %d time", hr, raw_time[time_counter]);
          //getchar();
-         hr_counter = 0;
          time_counter++;
       }         
       
