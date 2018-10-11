@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from scipy.stats import gaussian_kde
-
+import json
 
 def parseFile(fileName):
 	fh = open(fileName, 'r') #Open file with input name
@@ -11,7 +11,11 @@ def parseFile(fileName):
 	# Initialize lists
 	HR = [] 
 	t = []
-	for line in data: # Pass through all scanned data
+	for line in data: #Parse the date of the activity first
+		if line.find("<time>") != -1:
+			date = line[10:20]
+			break
+	for line in data: # Pass through all scanned data to get HR and time
 		if line.find("<ns3:hr>") != -1: # If a heart rate tag is found
 			startHR = line.find("<ns3:hr>") # Find start and end to split the line
 			stopHR = line.find("</ns3:hr>")
@@ -22,7 +26,7 @@ def parseFile(fileName):
 			t.append(float(line[startT+17:stopT-11])*3600+float(line[startT+20:stopT-8])*60+float(line[startT+23:stopT-5]))  #This line extracts the hours, minutes and seconds. They are all converted to seconds and appended to the time list
 	t[:] = [i - t[0] for i in t]
 	t.pop(0) #Delete first element of time which corresponds to activity start time. 
-	return(HR,t)
+	return(HR,t, date)
 
 def getZones():
 	zones = [] # Initialize list
@@ -57,9 +61,28 @@ def calcTrimp(HR, t, HRR, RHR):
 		trimp += float(count) / 60.0 * Hr * .64 * np.exp(1.92 * Hr)
 	return trimp
 
+def buildPMC(trimp, date):
+	try: # Make sure a usable PMCData file exists
+		with open('PMCData', 'r') as fh:
+			PMC = json.load(fh)
+			fh.close()
+		row = [date, trimp, 'CTL', 'ATL']
+		PMC.append(row)
+		with open('PMCData', 'w') as fh:
+			json.dump(PMC, fh)
+			fh.close()
+	except: # If not, build one
+		PMC = []
+		row = [date, trimp, 'CTL', 'ATL']
+		PMC.append(row)
+		with open('PMCData', 'w') as fh:
+			json.dump(PMC, fh)
+			fh.close()
+
 def generatePlot(HR, t, zones, tInZones):
 	plt.figure()
 	plt.plot(t, HR)
+	plt.grid()
 	plt.xlabel('Time (s)')
 	plt.ylabel('HR (bpm)')
 	plt.title('Heart Rate Over Time')
@@ -79,12 +102,7 @@ def generatePlot(HR, t, zones, tInZones):
 	colors = ['#d142f4', '#6dc9ff', '#1ecc00', '#cc8400', '#cc0000']
 	plt.pie(tInZones, labels = labels, explode = (.05,.05,.05,.05,.05), colors = colors)
 	plt.title('Time in Zones')
-	#z5.set_facecolor('#cc0000')
-	#z4.set_facecolor('#cc8400')
-	#z3.set_facecolor('#1ecc00')
-	#z2.set_facecolor('#6dc9ff')
-	#z1.set_facecolor('#d142f4')
-
+	
 
 	iqr = np.subtract(*np.percentile(HR, [75, 25])) # interquartile range
 	nbins = int((max(HR)-min(HR))/(2.0*iqr/(len(HR)**(1.0/3.0)))) #Freedman-Diaconis rule for number of bins in histogram
@@ -107,13 +125,11 @@ def generatePlot(HR, t, zones, tInZones):
 	plt.ylim((0,max(pdf)*1.5))
 	plt.show()
 
-
 #fileName = raw_input("Enter file name:")
-fileName = "test.gpx"
-[HR, t] = parseFile(fileName)
+fileName = "a.gpx"
+HR, t, date = parseFile(fileName)
 zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
 trimp = calcTrimp(HR, t, HRR, RHR)
-print trimp
-
+buildPMC(trimp, date)
 #generatePlot(HR, t, zones, tInZones)
