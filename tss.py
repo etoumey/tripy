@@ -66,15 +66,16 @@ def generatePlot(HR, t, zones, tInZones):
 
 
 	plt.figure()
-	z1, z2, z3, z4, z5 = plt.barh(np.arange(1,6),tInZones)
+	#z1, z2, z3, z4, z5 = plt.barh(np.arange(1,6),tInZones)
+	labels = 'Z1', 'Z2', 'Z3', 'Z4', 'Z5'
+	colors = ['#d142f4', '#6dc9ff', '#1ecc00', '#cc8400', '#cc0000']
+	plt.pie(tInZones, labels = labels, explode = (.05,.05,.05,.05,.05), colors = colors)
 	plt.title('Time in Zones')
-	plt.xlabel('Time (s)')
-	plt.ylabel('Zone')
-	z5.set_facecolor('#cc0000')
-	z4.set_facecolor('#cc8400')
-	z3.set_facecolor('#1ecc00')
-	z2.set_facecolor('#6dc9ff')
-	z1.set_facecolor('#d142f4')
+	#z5.set_facecolor('#cc0000')
+	#z4.set_facecolor('#cc8400')
+	#z3.set_facecolor('#1ecc00')
+	#z2.set_facecolor('#6dc9ff')
+	#z1.set_facecolor('#d142f4')
 
 
 	iqr = np.subtract(*np.percentile(HR, [75, 25])) # interquartile range
