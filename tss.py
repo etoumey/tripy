@@ -125,11 +125,12 @@ def generatePlot(HR, t, zones, tInZones):
 	plt.ylim((0,max(pdf)*1.5))
 	plt.show()
 
-#fileName = raw_input("Enter file name:")
-fileName = "a.gpx"
+fileName = raw_input("Enter file name:")
+#fileName = "hardDay.gpx"
 HR, t, date = parseFile(fileName)
 zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
 trimp = calcTrimp(HR, t, HRR, RHR)
 buildPMC(trimp, date)
-#generatePlot(HR, t, zones, tInZones)
+print trimp
+generatePlot(HR, t, zones, tInZones)
