@@ -35,6 +35,21 @@ def getZones():
 		zones.append((float(HR[1]) - float(HR[0]))*((i+5.0)/10.0) + float(HR[0]))
 	return(zones)
 
+def getTimeInZones(HR, t, zones):
+	tInZones = [0, 0, 0, 0, 0]
+	for i in range(0,len(HR)-1):
+		if HR[i] < zones[0]:
+			tInZones[0] += 1
+		elif HR[i] < zones[2]:
+			tInZones[1] += 1
+		elif HR[i] < zones[3]:
+			tInZones[2] += 1
+		elif HR[i] < zones[4]:
+			tInZones[3] += 1
+		else:
+			tInZones[4] += 1
+	return tInZones
+
 def generatePlot(HR, t, zones):
 	plt.figure()
 	plt.plot(t, HR)
@@ -42,13 +57,13 @@ def generatePlot(HR, t, zones):
 	plt.ylabel('HR (bpm)')
 	plt.title('Heart Rate Over Time')
 	currentAxis = plt.gca()
-	currentAxis.add_patch(Rectangle((0, int(zones[0])), t[len(t)-1], zones[1] - zones[0], alpha=.15, label='Z1', facecolor='#d142f4'))
-	currentAxis.add_patch(Rectangle((0, int(zones[1])), t[len(t)-1], zones[2] - zones[1], alpha=.15, label='Z2', facecolor='#6dc9ff'))
-	currentAxis.add_patch(Rectangle((0, int(zones[2])), t[len(t)-1], zones[3] - zones[2], alpha=.15, label='Z3', facecolor='#1ecc00'))
-	currentAxis.add_patch(Rectangle((0, int(zones[3])), t[len(t)-1], zones[4] - zones[3], alpha=.15, label='Z4', facecolor='#cc8400'))
 	currentAxis.add_patch(Rectangle((0, int(zones[4])), t[len(t)-1], zones[5] - zones[4], alpha=.15, label='Z5', facecolor='#cc0000'))
+	currentAxis.add_patch(Rectangle((0, int(zones[3])), t[len(t)-1], zones[4] - zones[3], alpha=.15, label='Z4', facecolor='#cc8400'))
+	currentAxis.add_patch(Rectangle((0, int(zones[2])), t[len(t)-1], zones[3] - zones[2], alpha=.15, label='Z3', facecolor='#1ecc00'))
+	currentAxis.add_patch(Rectangle((0, int(zones[1])), t[len(t)-1], zones[2] - zones[1], alpha=.15, label='Z2', facecolor='#6dc9ff'))
+	currentAxis.add_patch(Rectangle((0, int(zones[0])), t[len(t)-1], zones[1] - zones[0], alpha=.15, label='Z1', facecolor='#d142f4'))
 
-	print zones[0]
+	plt.legend(loc=4)
 	plt.show()
 
 
@@ -56,5 +71,6 @@ def generatePlot(HR, t, zones):
 fileName = "a.gpx"
 [HR, t] = parseFile(fileName)
 zones = getZones()
-print zones[0]
+tInZones = getTimeInZones(HR, t, zones)
+print tInZones
 generatePlot(HR, t, zones)
