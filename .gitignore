@@ -11,3 +11,4 @@ test_diff.txt
 
 # binary *.fit file
 *.fit
+*.gpx

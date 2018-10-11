@@ -47,7 +47,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
    int hr;  // integer HR
 
    int time_counter;
-   int hr_counter;  //counter for how many characters in HR
+   int hr_counter = 0;  //counter for how many characters in HR
 
    int start_time; // used to store start time in seconds
    int timer_reset_value;
@@ -75,7 +75,6 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
       if(strncmp(buffer,"<time",5) == 0)
       {
          strncpy(time_buffer, buffer + 17, 6); //was 17
-         printf("%s\n",time_buffer);
          //getchar();
          // Now our time_buffer holds a 6-char string with hrs, minutes, seconds
          // let's convert to seconds
@@ -91,13 +90,16 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
          // printf("%s\n",second_char_type);
 
          hour_ret = strtol(hour_char_type, &ptr_conv, 10);
+         //printf("%ld\n",hour_ret);
+
          //      printf("%ld\n",hour_ret);
          minute_ret = strtol(minute_char_type, &ptr_conv, 10);
+         //printf("%ld\n",minute_ret);
          second_ret = strtol(second_char_type, &ptr_conv, 10);
-
+         //printf("%ld\n", second_ret);
          // convert all items to seconds
          total_seconds = hour_ret * 3600 + minute_ret * 60 + second_ret;
-         // printf("%d\n\n",total_seconds);
+         //printf("%d\n\n",total_seconds);
        
          // ** ASSUMPTION ABOUT *.GPX FILE ALERT **
          // The first "<time>" tag is by itself at the top of the file and
@@ -115,20 +117,24 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
          {     
             fgets(buffer,256,fp);
             remove_leading_spaces_colons(buffer);
-         }while(strncmp(buffer,"<gpxtpxhr",9)); // Loop until buffer is HR tag
+         }while(strncmp(buffer,"<ns3hr",6));
+         //while(strncmp(buffer,"<gpxtpxhr",9)); // Loop until buffer is HR tag
 
          // Once the line containing HR info is in the buffer, increment the HR counter 
          // until reaching the "<" part of "</gpxtpx:hr>" tag. This way, we know if the HR
          // is 2 or 3 characters
+         //printf("%s", buffer);
+         hr_counter = 0;
          do
          {
             hr_counter++;
-         }while(strncmp(buffer + 10 + hr_counter, "<",1));
+         }while(strncmp(buffer + 6 + hr_counter, "<",1));
 
          // Copy the HR to a separate HR char array
-         strncpy(hr_buffer, buffer+10,hr_counter);
-         //hr_buffer[hr_counter+1] = '\0';
+         strncpy(hr_buffer, buffer + 1,hr_counter);
+         printf("%s\n", hr_buffer);
 
+         //hr_buffer[hr_counter+1] = '\0';
          // Normalize times by subtracting the start_time; this way the times in the 
          // array start at 0
          if(total_seconds - start_time < 0)
@@ -142,7 +148,7 @@ int parse_file_line(char *ptr_file_name, int *raw_time, int *raw_hr)
          raw_time[time_counter] = total_seconds - start_time + timer_reset_value;
          hr = strtol(hr_buffer, &ptr_conv, 10);
          raw_hr[time_counter] = hr;
-         //printf("%d hr %d time", hr, raw_time[time_counter]);
+         printf("%d hr %d time", hr, raw_time[time_counter]);
          //getchar();
          time_counter++;
       }         
