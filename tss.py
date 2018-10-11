@@ -32,7 +32,7 @@ def getZones():
 	HR = data[0].split(",")
 	for i in range(0,6):  # Calculate each zone according to (Max HR - RHR) * [zone percentage] + RHR
 		zones.append((float(HR[1]) - float(HR[0]))*((i+5.0)/10.0) + float(HR[0]))
-	return(zones)
+	return(zones, (float(HR[1]) - float(HR[0])), float(HR[0]))
 
 def getTimeInZones(HR, t, zones):
 	tInZones = [0, 0, 0, 0, 0]  # Initialize at zero
@@ -48,6 +48,14 @@ def getTimeInZones(HR, t, zones):
 		else:
 			tInZones[4] += 1
 	return tInZones
+
+def calcTrimp(HR, t, HRR, RHR):
+	trimp = 0
+	for i in range(int(min(HR)), int(max(HR))):
+		count = HR.count(i)
+		Hr = ((i)- RHR) / HRR
+		trimp += float(count) / 60.0 * Hr * .64 * np.exp(1.92 * Hr)
+	return trimp
 
 def generatePlot(HR, t, zones, tInZones):
 	plt.figure()
@@ -83,15 +91,15 @@ def generatePlot(HR, t, zones, tInZones):
 
 
 	plt.figure()
-	currentAxis = plt.gca()
-	currentAxis.add_patch(Rectangle(((zones[4]), 0), zones[5] - zones[4], .1, alpha=.15, label='Z5', facecolor='#cc0000'))
-	currentAxis.add_patch(Rectangle(((zones[3]), 0), zones[4] - zones[3], .1, alpha=.15, label='Z4', facecolor='#cc8400'))
-	currentAxis.add_patch(Rectangle(((zones[2]), 0), zones[3] - zones[2], .1, alpha=.15, label='Z3', facecolor='#1ecc00'))
-	currentAxis.add_patch(Rectangle(((zones[1]), 0), zones[2] - zones[1], .1, alpha=.15, label='Z2', facecolor='#6dc9ff'))
-	currentAxis.add_patch(Rectangle(((zones[0]), 0), zones[1] - zones[0], .1, alpha=.15, label='Z1', facecolor='#d142f4'))
 	kde = gaussian_kde(HR)
 	x = np.linspace(min(HR)-10, max(HR)+10, 500)
 	pdf = kde.evaluate(x)
+	currentAxis = plt.gca()
+	currentAxis.add_patch(Rectangle(((zones[4]), 0), zones[5] - zones[4], max(pdf)*1.5, alpha=.15, label='Z5', facecolor='#cc0000'))
+	currentAxis.add_patch(Rectangle(((zones[3]), 0), zones[4] - zones[3], max(pdf)*1.5, alpha=.15, label='Z4', facecolor='#cc8400'))
+	currentAxis.add_patch(Rectangle(((zones[2]), 0), zones[3] - zones[2], max(pdf)*1.5, alpha=.15, label='Z3', facecolor='#1ecc00'))
+	currentAxis.add_patch(Rectangle(((zones[1]), 0), zones[2] - zones[1], max(pdf)*1.5, alpha=.15, label='Z2', facecolor='#6dc9ff'))
+	currentAxis.add_patch(Rectangle(((zones[0]), 0), zones[1] - zones[0], max(pdf)*1.5, alpha=.15, label='Z1', facecolor='#d142f4'))
 	currentAxis.plot(x, pdf)
 	plt.hist(HR,normed=1, bins = nbins)
 	plt.legend(loc=2)
@@ -101,9 +109,11 @@ def generatePlot(HR, t, zones, tInZones):
 
 
 #fileName = raw_input("Enter file name:")
-fileName = "a.gpx"
+fileName = "test.gpx"
 [HR, t] = parseFile(fileName)
-zones = getZones()
+zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
+trimp = calcTrimp(HR, t, HRR, RHR)
+print trimp
 
-generatePlot(HR, t, zones, tInZones)
+#generatePlot(HR, t, zones, tInZones)
