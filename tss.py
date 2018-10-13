@@ -83,25 +83,23 @@ def buildPMC(trimp, date):
 #			json.dump(PMC, fh)
 			fh.close()
 
-	average = findAverage(PMC, 7)
-	print average
+	ATL = findAverage(PMC, 7)
+	CTL = findAverage(PMC, 42)
+	print ATL, CTL
 
 def findAverage(PMC, days):
 	average = 0
 	elapsedDays = 0
-
 	i = len(PMC) - 1 
 	dateFormat = "%Y-%m-%d"
 
-
 	firstDate = datetime.strptime(PMC[i][0], dateFormat)
 
-	while elapsedDays < days:
+	while (elapsedDays < days and i != 0):
 		average += PMC[i][1]
 		secondDate = datetime.strptime(PMC[i-1][0], dateFormat)
 		delta = firstDate - secondDate
 		elapsedDays = delta.days
-		print elapsedDays
 		i -= 1
 
 	average /= len(PMC) - 1 - i
