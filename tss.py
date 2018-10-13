@@ -71,16 +71,16 @@ def buildPMC(trimp, date):
 			PMC = json.load(fh)
 			fh.close()
 		row = [date, trimp, 'CTL', 'ATL']
-		#PMC.append(row)
-#		with open('PMCData', 'w') as fh:
-#			json.dump(PMC, fh)
-#			fh.close()
+ #COMMENTED FOR DEVELOPMENT ONLY		PMC.append(row)
+ #COMMENTED FOR DEVELOPMENT ONLY		with open('PMCData', 'w') as fh:           
+ #COMMENTED FOR DEVELOPMENT ONLY			json.dump(PMC, fh)
+ #COMMENTED FOR DEVELOPMENT ONLY			fh.close()
 	except: # If not, build one
 		PMC = []
 		row = [date, trimp, 'CTL', 'ATL']
-		#PMC.append(row)
+ #COMMENTED FOR DEVELOPMENT ONLY		PMC.append(row)
 		with open('PMCData', 'w') as fh:
-#			json.dump(PMC, fh)
+ #COMMENTED FOR DEVELOPMENT ONLY			json.dump(PMC, fh)
 			fh.close()
 
 	ATL = findAverage(PMC, 7)
