@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from scipy.stats import gaussian_kde
 import json
+from datetime import datetime
+
+
 
 def parseFile(fileName):
 	fh = open(fileName, 'r') #Open file with input name
@@ -62,22 +65,48 @@ def calcTrimp(HR, t, HRR, RHR):
 	return trimp
 
 def buildPMC(trimp, date):
+
 	try: # Make sure a usable PMCData file exists
 		with open('PMCData', 'r') as fh:
 			PMC = json.load(fh)
 			fh.close()
 		row = [date, trimp, 'CTL', 'ATL']
-		PMC.append(row)
-		with open('PMCData', 'w') as fh:
-			json.dump(PMC, fh)
-			fh.close()
+		#PMC.append(row)
+#		with open('PMCData', 'w') as fh:
+#			json.dump(PMC, fh)
+#			fh.close()
 	except: # If not, build one
 		PMC = []
 		row = [date, trimp, 'CTL', 'ATL']
-		PMC.append(row)
+		#PMC.append(row)
 		with open('PMCData', 'w') as fh:
-			json.dump(PMC, fh)
+#			json.dump(PMC, fh)
 			fh.close()
+
+	average = findAverage(PMC, 7)
+	print average
+
+def findAverage(PMC, days):
+	average = 0
+	elapsedDays = 0
+
+	i = len(PMC) - 1 
+	dateFormat = "%Y-%m-%d"
+
+
+	firstDate = datetime.strptime(PMC[i][0], dateFormat)
+
+	while elapsedDays < days:
+		average += PMC[i][1]
+		secondDate = datetime.strptime(PMC[i-1][0], dateFormat)
+		delta = firstDate - secondDate
+		elapsedDays = delta.days
+		print elapsedDays
+		i -= 1
+
+	average /= len(PMC) - 1 - i
+	return average
+
 
 def generatePlot(HR, t, zones, tInZones):
 	plt.figure()
@@ -125,12 +154,12 @@ def generatePlot(HR, t, zones, tInZones):
 	plt.ylim((0,max(pdf)*1.5))
 	plt.show()
 
-fileName = raw_input("Enter file name:")
-#fileName = "hardDay.gpx"
+#fileName = raw_input("Enter file name:")
+fileName = "a.gpx"
 HR, t, date = parseFile(fileName)
 zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
 trimp = calcTrimp(HR, t, HRR, RHR)
 buildPMC(trimp, date)
 print trimp
-generatePlot(HR, t, zones, tInZones)
+#generatePlot(HR, t, zones, tInZones)
