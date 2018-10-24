@@ -153,11 +153,11 @@ def generatePlot(HR, t, zones, tInZones):
 	plt.show()
 
 #fileName = raw_input("Enter file name:")
-fileName = "a.gpx"
+fileName = "test2.gpx"
 HR, t, date = parseFile(fileName)
 zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
 trimp = calcTrimp(HR, t, HRR, RHR)
 buildPMC(trimp, date)
 print trimp
-#generatePlot(HR, t, zones, tInZones)
+generatePlot(HR, t, zones, tInZones)
