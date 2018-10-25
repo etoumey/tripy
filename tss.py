@@ -4,7 +4,7 @@ from matplotlib.patches import Rectangle
 from scipy.stats import gaussian_kde
 import json
 from datetime import datetime
-
+import sys
 
 
 def parseFile(fileName):
@@ -65,33 +65,34 @@ def calcTrimp(HR, t, HRR, RHR):
 	return trimp
 
 def buildPMC(trimp, date):
-
-	try: # Make sure a usable PMCData file exists
-		with open('PMCData', 'r') as fh:
-			PMC = json.load(fh)
-			fh.close()
-		row = [date, trimp, 'CTL', 'ATL']
-		for i in range(0,len(PMC)):
-			if row[0] == PMC[0][i]:
-				ans = raw_input("This file has already been added to your PMC; analyze anyway? (Y/n) ")
+# Need to add support for non existant PMC
+	with open('PMCData', 'r') as fh:
+		PMC = json.load(fh)
+		fh.close()
 		
+	dup = 0 #Initialize with no dupes
+	print len(PMC)
+	for i in range(0,len(PMC) - 1):
+		if date == PMC[i][0]:
+			dup = 1
+		
+	if dup == 1:
+		print "Error: file has already been included in PMC"
+	else:
+		ATL = findAverage(PMC, 7, date, trimp)
+		CTL = findAverage(PMC, 42, date, trimp)
+		print ATL, CTL
+		row = [date, trimp, ATL, CTL] #Now with real values
 		PMC.append(row)
+
 		with open('PMCData', 'w') as fh:           
- 			json.dump(PMC, fh)
- 			fh.close()
-	except: # If not, build one
-		PMC = []
-		row = [date, trimp, 'CTL', 'ATL']
- 		PMC.append(row)
-		with open('PMCData', 'w') as fh:
- 			json.dump(PMC, fh)
+			json.dump(PMC, fh)
 			fh.close()
 
-	ATL = findAverage(PMC, 7)
-	CTL = findAverage(PMC, 42)
-	print ATL, CTL
 
-def findAverage(PMC, days):
+	
+
+def findAverage(PMC, days, date, trimp):
 	average = 0
 	elapsedDays = 0
 	i = len(PMC) - 1 
