@@ -91,6 +91,10 @@ def findAverage(PMC, days, date, trimp):
 	average = trimp
 	elapsedDays = 0
 	i = len(PMC) - 1
+	j = 0
+	series = []
+	series.append([trimp, 0])
+	
 	dateFormat = "%Y-%m-%dT%H:%M:%S"
 
 	#firstDate = datetime.strptime(PMC[i][0], dateFormat)
@@ -101,8 +105,11 @@ def findAverage(PMC, days, date, trimp):
 		secondDate = datetime.strptime(PMC[i-1][0], dateFormat)
 		delta = firstDate - secondDate
 		elapsedDays = delta.days
+		series.append([PMC[i][1], elapsedDays])  #Putting TRIMP elapsed days in a list
 		i -= 1
+		j += 1
 		
+	
 	average /= (len(PMC) - i)
 	return average
 
