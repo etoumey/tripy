@@ -114,18 +114,20 @@ def findAverage(PMC, days, date, trimp):
 	return average
 
 def generatePlot(HR, t, zones, tInZones):
+	plt.rc('text', usetex=True)
+	plt.rc('font', family='serif')
 	plt.figure()
 	plt.plot(t, HR)
 	plt.grid()
-	plt.xlabel('Time (s)')
-	plt.ylabel('HR (bpm)')
-	plt.title('Heart Rate Over Time')
+	plt.xlabel(r'\textbf{Time} (s)')
+	plt.ylabel(r'\textbf{HR} (bpm)')
+	plt.title(r'\textbf{Heart Rate Over Time}')
 	currentAxis = plt.gca()
-	currentAxis.add_patch(Rectangle((0, (zones[4])), t[len(t)-1], zones[5] - zones[4], alpha=.15, label='Z5', facecolor='#cc0000'))
-	currentAxis.add_patch(Rectangle((0, (zones[3])), t[len(t)-1], zones[4] - zones[3], alpha=.15, label='Z4', facecolor='#cc8400'))
-	currentAxis.add_patch(Rectangle((0, (zones[2])), t[len(t)-1], zones[3] - zones[2], alpha=.15, label='Z3', facecolor='#1ecc00'))
-	currentAxis.add_patch(Rectangle((0, (zones[1])), t[len(t)-1], zones[2] - zones[1], alpha=.15, label='Z2', facecolor='#6dc9ff'))
-	currentAxis.add_patch(Rectangle((0, (zones[0])), t[len(t)-1], zones[1] - zones[0], alpha=.15, label='Z1', facecolor='#d142f4'))
+	currentAxis.add_patch(Rectangle((0, (zones[4])), t[len(t)-1], zones[5] - zones[4], alpha=.2, label='Z5', facecolor='#cc0000'))
+	currentAxis.add_patch(Rectangle((0, (zones[3])), t[len(t)-1], zones[4] - zones[3], alpha=.2, label='Z4', facecolor='#cc8400'))
+	currentAxis.add_patch(Rectangle((0, (zones[2])), t[len(t)-1], zones[3] - zones[2], alpha=.2, label='Z3', facecolor='#1ecc00'))
+	currentAxis.add_patch(Rectangle((0, (zones[1])), t[len(t)-1], zones[2] - zones[1], alpha=.2, label='Z2', facecolor='#6dc9ff'))
+	currentAxis.add_patch(Rectangle((0, (zones[0])), t[len(t)-1], zones[1] - zones[0], alpha=.2, label='Z1', facecolor='#d142f4'))
 
 	plt.legend(loc=4)
 
@@ -135,7 +137,7 @@ def generatePlot(HR, t, zones, tInZones):
 	labels = 'Z1', 'Z2', 'Z3', 'Z4', 'Z5'
 	colors = ['#d142f4', '#6dc9ff', '#1ecc00', '#cc8400', '#cc0000']
 	plt.pie(tInZones, labels = labels, explode = (.05,.05,.05,.05,.05), colors = colors)
-	plt.title('Time in Zones')
+	plt.title(r'\textbf{Time in Zones}')
 	
 
 	iqr = np.subtract(*np.percentile(HR, [75, 25])) # interquartile range
@@ -147,15 +149,15 @@ def generatePlot(HR, t, zones, tInZones):
 	x = np.linspace(min(HR)-10, max(HR)+10, 500)
 	pdf = kde.evaluate(x)
 	currentAxis = plt.gca()
-	currentAxis.add_patch(Rectangle(((zones[4]), 0), zones[5] - zones[4], max(pdf)*1.5, alpha=.15, label='Z5', facecolor='#cc0000'))
-	currentAxis.add_patch(Rectangle(((zones[3]), 0), zones[4] - zones[3], max(pdf)*1.5, alpha=.15, label='Z4', facecolor='#cc8400'))
-	currentAxis.add_patch(Rectangle(((zones[2]), 0), zones[3] - zones[2], max(pdf)*1.5, alpha=.15, label='Z3', facecolor='#1ecc00'))
-	currentAxis.add_patch(Rectangle(((zones[1]), 0), zones[2] - zones[1], max(pdf)*1.5, alpha=.15, label='Z2', facecolor='#6dc9ff'))
-	currentAxis.add_patch(Rectangle(((zones[0]), 0), zones[1] - zones[0], max(pdf)*1.5, alpha=.15, label='Z1', facecolor='#d142f4'))
+	currentAxis.add_patch(Rectangle(((zones[4]), 0), zones[5] - zones[4], max(pdf)*1.5, alpha=.2, label='Z5', facecolor='#cc0000'))
+	currentAxis.add_patch(Rectangle(((zones[3]), 0), zones[4] - zones[3], max(pdf)*1.5, alpha=.2, label='Z4', facecolor='#cc8400'))
+	currentAxis.add_patch(Rectangle(((zones[2]), 0), zones[3] - zones[2], max(pdf)*1.5, alpha=.2, label='Z3', facecolor='#1ecc00'))
+	currentAxis.add_patch(Rectangle(((zones[1]), 0), zones[2] - zones[1], max(pdf)*1.5, alpha=.2, label='Z2', facecolor='#6dc9ff'))
+	currentAxis.add_patch(Rectangle(((zones[0]), 0), zones[1] - zones[0], max(pdf)*1.5, alpha=.2, label='Z1', facecolor='#d142f4'))
 	currentAxis.plot(x, pdf)
 	plt.hist(HR,normed=1, bins = nbins)
 	plt.legend(loc=2)
-	plt.title('Heart Rate Histogram and PDF')
+	plt.title(r'\textbf{Heart Rate Histogram and PDF}')
 	plt.ylim((0,max(pdf)*1.5))
 	plt.show()
 
@@ -169,4 +171,4 @@ zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
 trimp = calcTrimp(HR, t, HRR, RHR)
 buildPMC(trimp, date)
-#generatePlot(HR, t, zones, tInZones)
+generatePlot(HR, t, zones, tInZones)
