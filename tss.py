@@ -71,16 +71,16 @@ def buildPMC(trimp, date):
 			PMC = json.load(fh)
 			fh.close()
 		row = [date, trimp, 'CTL', 'ATL']
- #COMMENTED FOR DEVELOPMENT ONLY		PMC.append(row)
- #COMMENTED FOR DEVELOPMENT ONLY		with open('PMCData', 'w') as fh:           
- #COMMENTED FOR DEVELOPMENT ONLY			json.dump(PMC, fh)
- #COMMENTED FOR DEVELOPMENT ONLY			fh.close()
+		PMC.append(row)
+		with open('PMCData', 'w') as fh:           
+ 			json.dump(PMC, fh)
+ 			fh.close()
 	except: # If not, build one
 		PMC = []
 		row = [date, trimp, 'CTL', 'ATL']
- #COMMENTED FOR DEVELOPMENT ONLY		PMC.append(row)
+ #		PMC.append(row)
 		with open('PMCData', 'w') as fh:
- #COMMENTED FOR DEVELOPMENT ONLY			json.dump(PMC, fh)
+ #			json.dump(PMC, fh)
 			fh.close()
 
 	ATL = findAverage(PMC, 7)
@@ -153,11 +153,11 @@ def generatePlot(HR, t, zones, tInZones):
 	plt.show()
 
 #fileName = raw_input("Enter file name:")
-fileName = "test2.gpx"
+fileName = "a.gpx"
 HR, t, date = parseFile(fileName)
 zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
 trimp = calcTrimp(HR, t, HRR, RHR)
 buildPMC(trimp, date)
 print trimp
-generatePlot(HR, t, zones, tInZones)
+#generatePlot(HR, t, zones, tInZones)
