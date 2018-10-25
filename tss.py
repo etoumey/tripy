@@ -64,17 +64,15 @@ def calcTrimp(HR, t, HRR, RHR):
 		trimp += float(count) / 60.0 * Hr * .64 * np.exp(1.92 * Hr)
 	return trimp
 
-def buildPMC(trimp, date):
-# Need to add support for non existant PMC
+def buildPMC(trimp, date): # Need to add support for non existant PMC
 	with open('PMCData', 'r') as fh:
 		PMC = json.load(fh)
 		fh.close()
 		
 	dup = 0 #Initialize with no dupes
-	print len(PMC)
-	for i in range(0,len(PMC) - 1):
+	for i in range(0,len(PMC)):
 		if date == PMC[i][0]:
-			dup = 1
+			dup = 1 #you a bad boy
 		
 	if dup == 1:
 		print "Error: file has already been included in PMC"
@@ -164,5 +162,4 @@ zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
 trimp = calcTrimp(HR, t, HRR, RHR)
 buildPMC(trimp, date)
-print trimp
 #generatePlot(HR, t, zones, tInZones)
