@@ -4,7 +4,7 @@ from matplotlib.patches import Rectangle
 from scipy.stats import gaussian_kde
 import json
 from datetime import datetime
-
+import sys
 
 
 def parseFile(fileName):
@@ -16,7 +16,7 @@ def parseFile(fileName):
 	t = []
 	for line in data: #Parse the date of the activity first
 		if line.find("<time>") != -1:
-			date = line[10:20]
+			date = line[10:29]
 			break
 	for line in data: # Pass through all scanned data to get HR and time
 		if line.find("<ns3:hr>") != -1: # If a heart rate tag is found
@@ -64,34 +64,37 @@ def calcTrimp(HR, t, HRR, RHR):
 		trimp += float(count) / 60.0 * Hr * .64 * np.exp(1.92 * Hr)
 	return trimp
 
-def buildPMC(trimp, date):
+def buildPMC(trimp, date): # Need to add support for non existant PMC
+	with open('PMCData', 'r') as fh:
+		PMC = json.load(fh)
+		fh.close()
+		
+	dup = 0 #Initialize with no dupes
+	for i in range(0,len(PMC)):
+		if date == PMC[i][0]:
+			dup = 1 #you a bad boy
+		
+	if dup == 1:
+		print "Error: file has already been included in PMC"
+	else:
+		ATL = findAverage(PMC, 7, date, trimp)
+		CTL = findAverage(PMC, 42, date, trimp)
+		print ATL, CTL
+		row = [date, trimp, ATL, CTL] #Now with real values
+		PMC.append(row)
 
-	try: # Make sure a usable PMCData file exists
-		with open('PMCData', 'r') as fh:
-			PMC = json.load(fh)
+		with open('PMCData', 'w') as fh:           
+			json.dump(PMC, fh)
 			fh.close()
-		row = [date, trimp, 'CTL', 'ATL']
- #COMMENTED FOR DEVELOPMENT ONLY		PMC.append(row)
- #COMMENTED FOR DEVELOPMENT ONLY		with open('PMCData', 'w') as fh:           
- #COMMENTED FOR DEVELOPMENT ONLY			json.dump(PMC, fh)
- #COMMENTED FOR DEVELOPMENT ONLY			fh.close()
-	except: # If not, build one
-		PMC = []
-		row = [date, trimp, 'CTL', 'ATL']
- #COMMENTED FOR DEVELOPMENT ONLY		PMC.append(row)
-		with open('PMCData', 'w') as fh:
- #COMMENTED FOR DEVELOPMENT ONLY			json.dump(PMC, fh)
-			fh.close()
 
-	ATL = findAverage(PMC, 7)
-	CTL = findAverage(PMC, 42)
-	print ATL, CTL
 
-def findAverage(PMC, days):
+	
+
+def findAverage(PMC, days, date, trimp):
 	average = 0
 	elapsedDays = 0
 	i = len(PMC) - 1 
-	dateFormat = "%Y-%m-%d"
+	dateFormat = "%Y-%m-%dT%H:%M:%S"
 
 	firstDate = datetime.strptime(PMC[i][0], dateFormat)
 
@@ -159,5 +162,4 @@ zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
 trimp = calcTrimp(HR, t, HRR, RHR)
 buildPMC(trimp, date)
-print trimp
 #generatePlot(HR, t, zones, tInZones)
