@@ -16,7 +16,7 @@ def parseFile(fileName):
 	t = []
 	for line in data: #Parse the date of the activity first
 		if line.find("<time>") != -1:
-			date = line[10:20]
+			date = line[10:29]
 			break
 	for line in data: # Pass through all scanned data to get HR and time
 		if line.find("<ns3:hr>") != -1: # If a heart rate tag is found
@@ -71,6 +71,10 @@ def buildPMC(trimp, date):
 			PMC = json.load(fh)
 			fh.close()
 		row = [date, trimp, 'CTL', 'ATL']
+		for i in range(0,len(PMC)):
+			if row[0] == PMC[0][i]:
+				ans = raw_input("This file has already been added to your PMC; analyze anyway? (Y/n) ")
+		
 		PMC.append(row)
 		with open('PMCData', 'w') as fh:           
  			json.dump(PMC, fh)
@@ -78,9 +82,9 @@ def buildPMC(trimp, date):
 	except: # If not, build one
 		PMC = []
 		row = [date, trimp, 'CTL', 'ATL']
- #		PMC.append(row)
+ 		PMC.append(row)
 		with open('PMCData', 'w') as fh:
- #			json.dump(PMC, fh)
+ 			json.dump(PMC, fh)
 			fh.close()
 
 	ATL = findAverage(PMC, 7)
@@ -91,7 +95,7 @@ def findAverage(PMC, days):
 	average = 0
 	elapsedDays = 0
 	i = len(PMC) - 1 
-	dateFormat = "%Y-%m-%d"
+	dateFormat = "%Y-%m-%dT%H:%M:%S"
 
 	firstDate = datetime.strptime(PMC[i][0], dateFormat)
 
