@@ -4,7 +4,7 @@ from matplotlib.patches import Rectangle
 from scipy.stats import gaussian_kde
 import json
 from datetime import datetime
-import sys
+import pandas as pd
 
 
 def parseFile(fileName):
@@ -79,7 +79,6 @@ def buildPMC(trimp, date): # Need to add support for non existant PMC
 	else:
 		ATL = findAverage(PMC, 7, date, trimp)
 		CTL = findAverage(PMC, 42, date, trimp)
-		print ATL, CTL
 		row = [date, trimp, ATL, CTL] #Now with real values
 		PMC.append(row)
 
@@ -87,16 +86,15 @@ def buildPMC(trimp, date): # Need to add support for non existant PMC
 			json.dump(PMC, fh)
 			fh.close()
 
-
-	
-
 def findAverage(PMC, days, date, trimp):
-	average = 0
+	ewma = pd.Series.ewm
+	average = trimp
 	elapsedDays = 0
-	i = len(PMC) - 1 
+	i = len(PMC) - 1
 	dateFormat = "%Y-%m-%dT%H:%M:%S"
 
-	firstDate = datetime.strptime(PMC[i][0], dateFormat)
+	#firstDate = datetime.strptime(PMC[i][0], dateFormat)
+	firstDate = datetime.strptime(date, dateFormat)
 
 	while (elapsedDays < days and i != 0):
 		average += PMC[i][1]
@@ -104,10 +102,9 @@ def findAverage(PMC, days, date, trimp):
 		delta = firstDate - secondDate
 		elapsedDays = delta.days
 		i -= 1
-
-	average /= len(PMC) - 1 - i
+		
+	average /= (len(PMC) - i)
 	return average
-
 
 def generatePlot(HR, t, zones, tInZones):
 	plt.figure()
@@ -154,6 +151,9 @@ def generatePlot(HR, t, zones, tInZones):
 	plt.title('Heart Rate Histogram and PDF')
 	plt.ylim((0,max(pdf)*1.5))
 	plt.show()
+
+
+############################################### Main script #############
 
 #fileName = raw_input("Enter file name:")
 fileName = "a.gpx"
