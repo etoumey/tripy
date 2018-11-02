@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from scipy.stats import gaussian_kde
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 
 
@@ -73,24 +73,41 @@ def buildPMC(trimp, date): # Need to add support for non existant PMC
 	for i in range(0,len(PMC)):
 		if date == PMC[i][0]:
 			dup = 1 #you a bad boy
-		
+	
 	if dup == 1:
 		print "Error: file has already been included in PMC"
+
 	else:
-		ATL = findAverage(PMC, 7, date, trimp)
-		CTL = findAverage(PMC, 42, date, trimp)
+		# Loop through PMC and insert the line appropriately 
+		dateFormat = "%Y-%m-%dT%H:%M:%S"
+		newDate = datetime.strptime(date, dateFormat)
+
+		ii = len(PMC) - 1
+
+		while (ii > -1 and newDate < datetime.strptime(PMC[ii][0], dateFormat)):
+			ii -= 1
+			print ii
+
+		ATL = findAverage(PMC, 7, date, trimp, ii)
+		CTL = findAverage(PMC, 42, date, trimp, ii)
 		row = [date, trimp, ATL, CTL] #Now with real values
-		PMC.append(row)
+		PMC.insert(ii+1, row)	
+
+		for jj in range(ii + 1, len(PMC) - 1):
+			ATL = findAverage(PMC, 7, PMC[jj][0], trimp, jj)
+			CTL = findAverage(PMC, 42, PMC[jj][0], trimp, jj)
+			row = [PMC[jj][0], PMC[jj][1], ATL, CTL] #Now with real values
+			PMC[jj] = row			
 
 		with open('PMCData', 'w') as fh:           
 			json.dump(PMC, fh)
 			fh.close()
 
-def findAverage(PMC, days, date, trimp):
+def findAverage(PMC, days, date, trimp, i):
 	ewma = pd.Series.ewm
 	average = trimp
 	elapsedDays = 0
-	i = len(PMC) - 1
+	i -= 1
 	j = 0
 	series = []
 	series.append([trimp, 0])
@@ -100,7 +117,7 @@ def findAverage(PMC, days, date, trimp):
 	#firstDate = datetime.strptime(PMC[i][0], dateFormat)
 	firstDate = datetime.strptime(date, dateFormat)
 
-	while (elapsedDays < days and i != 0):
+	while (elapsedDays < days and i >= 0):
 		average += PMC[i][1]
 		secondDate = datetime.strptime(PMC[i-1][0], dateFormat)
 		delta = firstDate - secondDate
@@ -165,10 +182,10 @@ def generatePlot(HR, t, zones, tInZones):
 ############################################### Main script #############
 
 #fileName = raw_input("Enter file name:")
-fileName = "a.gpx"
+fileName = "a302.gpx"
 HR, t, date = parseFile(fileName)
 zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
 trimp = calcTrimp(HR, t, HRR, RHR)
 buildPMC(trimp, date)
-generatePlot(HR, t, zones, tInZones)
+#generatePlot(HR, t, zones, tInZones)
