@@ -31,6 +31,7 @@ def parseFile(fileName):
 	t.pop(0) #Delete first element of time which corresponds to activity start time. 
 	return(HR,t, date)
 
+
 def getZones():
 	zones = [] # Initialize list
 	fh = open('userData','r') # Read user data of format "RHR,MaxHR"
@@ -40,6 +41,7 @@ def getZones():
 	for i in range(0,6):  # Calculate each zone according to (Max HR - RHR) * [zone percentage] + RHR
 		zones.append((float(HR[1]) - float(HR[0]))*((i+5.0)/10.0) + float(HR[0]))
 	return(zones, (float(HR[1]) - float(HR[0])), float(HR[0]))
+
 
 def getTimeInZones(HR, t, zones):
 	tInZones = [0, 0, 0, 0, 0]  # Initialize at zero
@@ -56,6 +58,7 @@ def getTimeInZones(HR, t, zones):
 			tInZones[4] += 1
 	return tInZones
 
+
 def calcTrimp(HR, t, HRR, RHR):
 	trimp = 0
 	for i in range(int(min(HR)), int(max(HR))):
@@ -63,6 +66,7 @@ def calcTrimp(HR, t, HRR, RHR):
 		Hr = ((i)- RHR) / HRR
 		trimp += float(count) / 60.0 * Hr * .64 * np.exp(1.92 * Hr)
 	return trimp
+
 
 def buildPMC(trimp, date): # Need to add support for non existant PMC
 	with open('PMCData', 'r') as fh:
@@ -103,6 +107,7 @@ def buildPMC(trimp, date): # Need to add support for non existant PMC
 			json.dump(PMC, fh)
 			fh.close()
 
+
 def findAverage(PMC, days, date, trimp, i):
 	ewma = pd.Series.ewm
 	average = trimp
@@ -129,6 +134,7 @@ def findAverage(PMC, days, date, trimp, i):
 	
 	average /= (len(PMC) - i)
 	return average
+
 
 def generatePlot(HR, t, zones, tInZones):
 	plt.rc('text', usetex=True)
@@ -177,6 +183,7 @@ def generatePlot(HR, t, zones, tInZones):
 	plt.title(r'\textbf{Heart Rate Histogram and PDF}')
 	plt.ylim((0,max(pdf)*1.5))
 	plt.show()
+
 
 
 ############################################### Main script #############
