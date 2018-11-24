@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from scipy.stats import gaussian_kde
 import json
-from datetime import datetime
-import sys
+from datetime import datetime, timedelta
+import pandas as pd
 
 
 def parseFile(fileName):
@@ -31,6 +31,7 @@ def parseFile(fileName):
 	t.pop(0) #Delete first element of time which corresponds to activity start time. 
 	return(HR,t, date)
 
+
 def getZones():
 	zones = [] # Initialize list
 	fh = open('userData','r') # Read user data of format "RHR,MaxHR"
@@ -40,6 +41,7 @@ def getZones():
 	for i in range(0,6):  # Calculate each zone according to (Max HR - RHR) * [zone percentage] + RHR
 		zones.append((float(HR[1]) - float(HR[0]))*((i+5.0)/10.0) + float(HR[0]))
 	return(zones, (float(HR[1]) - float(HR[0])), float(HR[0]))
+
 
 def getTimeInZones(HR, t, zones):
 	tInZones = [0, 0, 0, 0, 0]  # Initialize at zero
@@ -56,6 +58,7 @@ def getTimeInZones(HR, t, zones):
 			tInZones[4] += 1
 	return tInZones
 
+
 def calcTrimp(HR, t, HRR, RHR):
 	trimp = 0
 	for i in range(int(min(HR)), int(max(HR))):
@@ -64,64 +67,85 @@ def calcTrimp(HR, t, HRR, RHR):
 		trimp += float(count) / 60.0 * Hr * .64 * np.exp(1.92 * Hr)
 	return trimp
 
-def buildPMC(trimp, date): # Need to add support for non existant PMC
+
+def buildPMC(trimp, date): # Need to add support for non existent PMC
 	with open('PMCData', 'r') as fh:
 		PMC = json.load(fh)
 		fh.close()
+
+	#First add all days since your last activity 
+	strDateFormat = "%Y-%m-%dT%H:%M:%S" #Just to extract the date from the string which includes the T, no T after this
+	dateFormat = "%Y-%m-%d %H:%M:%S"
+	lastDate = datetime.strptime(PMC[len(PMC)-1][0], strDateFormat) # Most recent activity 
+	
+	today = datetime.today()
+	delta = today - lastDate
+	for i in range (1, delta.days):
+		row = [str(lastDate + timedelta(days=i)), 0, 0, 0]
+		PMC.append(row)
+
 		
 	dup = 0 #Initialize with no dupes
 	for i in range(0,len(PMC)):
 		if date == PMC[i][0]:
 			dup = 1 #you a bad boy
-		
+	
 	if dup == 1:
 		print "Error: file has already been included in PMC"
+
 	else:
-		ATL = findAverage(PMC, 7, date, trimp)
-		CTL = findAverage(PMC, 42, date, trimp)
-		print ATL, CTL
+		# Loop through PMC and insert the line appropriately 
+		newDate = datetime.strptime(date, strDateFormat)
+
+		ii = len(PMC) - 1
+
+		while (ii > -1 and newDate < datetime.strptime(PMC[ii][0], dateFormat)):
+			ii -= 1
+
+		ATL = findAverage(PMC, 7, date, trimp, ii)
+		CTL = findAverage(PMC, 42, date, trimp, ii)
 		row = [date, trimp, ATL, CTL] #Now with real values
-		PMC.append(row)
+		PMC.insert(ii+1, row)	
 
-		with open('PMCData', 'w') as fh:           
-			json.dump(PMC, fh)
-			fh.close()
+		for jj in range(ii + 1, len(PMC) - 1):
+			ATL = findAverage(PMC, 7, PMC[jj][0], trimp, jj)
+			CTL = findAverage(PMC, 42, PMC[jj][0], trimp, jj)
+			row = [PMC[jj][0], PMC[jj][1], ATL, CTL] #Now with real values
+			PMC[jj] = row			
+
+	with open('PMCData', 'w') as fh:           
+		json.dump(PMC, fh)
+		fh.close()
 
 
-	
-
-def findAverage(PMC, days, date, trimp):
-	average = 0
-	elapsedDays = 0
-	i = len(PMC) - 1 
+def findAverage(PMC, days, date, trimp, i):
 	dateFormat = "%Y-%m-%dT%H:%M:%S"
+	#delta = datetime.today() - date
 
-	firstDate = datetime.strptime(PMC[i][0], dateFormat)
+	for j in range(0, len(PMC) - 1):
+		print 1
+	average = 1
+	# Try this one first: Todays CTL = Yesterday's CTL + (Today's TRIMP - Yesterday's CTL)/time
+	#  training load (yesterday)x(exp(-1/k))+ TSS (today) x (1-exp(-1/k)) 
 
-	while (elapsedDays < days and i != 0):
-		average += PMC[i][1]
-		secondDate = datetime.strptime(PMC[i-1][0], dateFormat)
-		delta = firstDate - secondDate
-		elapsedDays = delta.days
-		i -= 1
-
-	average /= len(PMC) - 1 - i
 	return average
 
 
 def generatePlot(HR, t, zones, tInZones):
+	plt.rc('text', usetex=True)
+	plt.rc('font', family='serif')
 	plt.figure()
 	plt.plot(t, HR)
 	plt.grid()
-	plt.xlabel('Time (s)')
-	plt.ylabel('HR (bpm)')
-	plt.title('Heart Rate Over Time')
+	plt.xlabel(r'\textbf{Time} (s)')
+	plt.ylabel(r'\textbf{HR} (bpm)')
+	plt.title(r'\textbf{Heart Rate Over Time}')
 	currentAxis = plt.gca()
-	currentAxis.add_patch(Rectangle((0, (zones[4])), t[len(t)-1], zones[5] - zones[4], alpha=.15, label='Z5', facecolor='#cc0000'))
-	currentAxis.add_patch(Rectangle((0, (zones[3])), t[len(t)-1], zones[4] - zones[3], alpha=.15, label='Z4', facecolor='#cc8400'))
-	currentAxis.add_patch(Rectangle((0, (zones[2])), t[len(t)-1], zones[3] - zones[2], alpha=.15, label='Z3', facecolor='#1ecc00'))
-	currentAxis.add_patch(Rectangle((0, (zones[1])), t[len(t)-1], zones[2] - zones[1], alpha=.15, label='Z2', facecolor='#6dc9ff'))
-	currentAxis.add_patch(Rectangle((0, (zones[0])), t[len(t)-1], zones[1] - zones[0], alpha=.15, label='Z1', facecolor='#d142f4'))
+	currentAxis.add_patch(Rectangle((0, (zones[4])), t[len(t)-1], zones[5] - zones[4], alpha=.2, label='Z5', facecolor='#cc0000'))
+	currentAxis.add_patch(Rectangle((0, (zones[3])), t[len(t)-1], zones[4] - zones[3], alpha=.2, label='Z4', facecolor='#cc8400'))
+	currentAxis.add_patch(Rectangle((0, (zones[2])), t[len(t)-1], zones[3] - zones[2], alpha=.2, label='Z3', facecolor='#1ecc00'))
+	currentAxis.add_patch(Rectangle((0, (zones[1])), t[len(t)-1], zones[2] - zones[1], alpha=.2, label='Z2', facecolor='#6dc9ff'))
+	currentAxis.add_patch(Rectangle((0, (zones[0])), t[len(t)-1], zones[1] - zones[0], alpha=.2, label='Z1', facecolor='#d142f4'))
 
 	plt.legend(loc=4)
 
@@ -131,7 +155,7 @@ def generatePlot(HR, t, zones, tInZones):
 	labels = 'Z1', 'Z2', 'Z3', 'Z4', 'Z5'
 	colors = ['#d142f4', '#6dc9ff', '#1ecc00', '#cc8400', '#cc0000']
 	plt.pie(tInZones, labels = labels, explode = (.05,.05,.05,.05,.05), colors = colors)
-	plt.title('Time in Zones')
+	plt.title(r'\textbf{Time in Zones}')
 	
 
 	iqr = np.subtract(*np.percentile(HR, [75, 25])) # interquartile range
@@ -143,23 +167,28 @@ def generatePlot(HR, t, zones, tInZones):
 	x = np.linspace(min(HR)-10, max(HR)+10, 500)
 	pdf = kde.evaluate(x)
 	currentAxis = plt.gca()
-	currentAxis.add_patch(Rectangle(((zones[4]), 0), zones[5] - zones[4], max(pdf)*1.5, alpha=.15, label='Z5', facecolor='#cc0000'))
-	currentAxis.add_patch(Rectangle(((zones[3]), 0), zones[4] - zones[3], max(pdf)*1.5, alpha=.15, label='Z4', facecolor='#cc8400'))
-	currentAxis.add_patch(Rectangle(((zones[2]), 0), zones[3] - zones[2], max(pdf)*1.5, alpha=.15, label='Z3', facecolor='#1ecc00'))
-	currentAxis.add_patch(Rectangle(((zones[1]), 0), zones[2] - zones[1], max(pdf)*1.5, alpha=.15, label='Z2', facecolor='#6dc9ff'))
-	currentAxis.add_patch(Rectangle(((zones[0]), 0), zones[1] - zones[0], max(pdf)*1.5, alpha=.15, label='Z1', facecolor='#d142f4'))
+	currentAxis.add_patch(Rectangle(((zones[4]), 0), zones[5] - zones[4], max(pdf)*1.5, alpha=.2, label='Z5', facecolor='#cc0000'))
+	currentAxis.add_patch(Rectangle(((zones[3]), 0), zones[4] - zones[3], max(pdf)*1.5, alpha=.2, label='Z4', facecolor='#cc8400'))
+	currentAxis.add_patch(Rectangle(((zones[2]), 0), zones[3] - zones[2], max(pdf)*1.5, alpha=.2, label='Z3', facecolor='#1ecc00'))
+	currentAxis.add_patch(Rectangle(((zones[1]), 0), zones[2] - zones[1], max(pdf)*1.5, alpha=.2, label='Z2', facecolor='#6dc9ff'))
+	currentAxis.add_patch(Rectangle(((zones[0]), 0), zones[1] - zones[0], max(pdf)*1.5, alpha=.2, label='Z1', facecolor='#d142f4'))
 	currentAxis.plot(x, pdf)
 	plt.hist(HR,normed=1, bins = nbins)
 	plt.legend(loc=2)
-	plt.title('Heart Rate Histogram and PDF')
+	plt.title(r'\textbf{Heart Rate Histogram and PDF}')
 	plt.ylim((0,max(pdf)*1.5))
 	plt.show()
 
+
+
+############################################### Main script #############
+
 #fileName = raw_input("Enter file name:")
-fileName = "a.gpx"
+fileName = "zone4.gpx"
 HR, t, date = parseFile(fileName)
 zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
 trimp = calcTrimp(HR, t, HRR, RHR)
+print trimp
 buildPMC(trimp, date)
 #generatePlot(HR, t, zones, tInZones)
