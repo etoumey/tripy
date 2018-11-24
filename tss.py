@@ -68,10 +68,22 @@ def calcTrimp(HR, t, HRR, RHR):
 	return trimp
 
 
-def buildPMC(trimp, date): # Need to add support for non existant PMC
+def buildPMC(trimp, date): # Need to add support for non existent PMC
 	with open('PMCData', 'r') as fh:
 		PMC = json.load(fh)
 		fh.close()
+
+	#First add all days since your last activity 
+	strDateFormat = "%Y-%m-%dT%H:%M:%S" #Just to extract the date from the string which includes the T, no T after this
+	dateFormat = "%Y-%m-%d %H:%M:%S"
+	lastDate = datetime.strptime(PMC[len(PMC)-1][0], strDateFormat) # Most recent activity 
+	
+	today = datetime.today()
+	delta = today - lastDate
+	for i in range (1, delta.days):
+		row = [str(lastDate + timedelta(days=i)), 0, 0, 0]
+		PMC.append(row)
+
 		
 	dup = 0 #Initialize with no dupes
 	for i in range(0,len(PMC)):
@@ -83,14 +95,12 @@ def buildPMC(trimp, date): # Need to add support for non existant PMC
 
 	else:
 		# Loop through PMC and insert the line appropriately 
-		dateFormat = "%Y-%m-%dT%H:%M:%S"
-		newDate = datetime.strptime(date, dateFormat)
+		newDate = datetime.strptime(date, strDateFormat)
 
 		ii = len(PMC) - 1
 
 		while (ii > -1 and newDate < datetime.strptime(PMC[ii][0], dateFormat)):
 			ii -= 1
-			print ii
 
 		ATL = findAverage(PMC, 7, date, trimp, ii)
 		CTL = findAverage(PMC, 42, date, trimp, ii)
@@ -103,36 +113,21 @@ def buildPMC(trimp, date): # Need to add support for non existant PMC
 			row = [PMC[jj][0], PMC[jj][1], ATL, CTL] #Now with real values
 			PMC[jj] = row			
 
-		with open('PMCData', 'w') as fh:           
-			json.dump(PMC, fh)
-			fh.close()
+	with open('PMCData', 'w') as fh:           
+		json.dump(PMC, fh)
+		fh.close()
 
 
 def findAverage(PMC, days, date, trimp, i):
-	ewma = pd.Series.ewm
-	average = trimp
-	elapsedDays = 0
-	i -= 1
-	j = 0
-	series = []
-	series.append([trimp, 0])
-	
 	dateFormat = "%Y-%m-%dT%H:%M:%S"
+	#delta = datetime.today() - date
 
-	#firstDate = datetime.strptime(PMC[i][0], dateFormat)
-	firstDate = datetime.strptime(date, dateFormat)
+	for j in range(0, len(PMC) - 1):
+		print 1
+	average = 1
+	# Try this one first: Todays CTL = Yesterday's CTL + (Today's TRIMP - Yesterday's CTL)/time
+	#  training load (yesterday)x(exp(-1/k))+ TSS (today) x (1-exp(-1/k)) 
 
-	while (elapsedDays < days and i >= 0):
-		average += PMC[i][1]
-		secondDate = datetime.strptime(PMC[i-1][0], dateFormat)
-		delta = firstDate - secondDate
-		elapsedDays = delta.days
-		series.append([PMC[i][1], elapsedDays])  #Putting TRIMP elapsed days in a list
-		i -= 1
-		j += 1
-		
-	
-	average /= (len(PMC) - i)
 	return average
 
 
@@ -188,12 +183,12 @@ def generatePlot(HR, t, zones, tInZones):
 
 ############################################### Main script #############
 
-fileName = raw_input("Enter file name:")
-#fileName = "zone4.gpx"
+#fileName = raw_input("Enter file name:")
+fileName = "zone4.gpx"
 HR, t, date = parseFile(fileName)
 zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
 trimp = calcTrimp(HR, t, HRR, RHR)
 print trimp
 buildPMC(trimp, date)
-generatePlot(HR, t, zones, tInZones)
+#generatePlot(HR, t, zones, tInZones)
