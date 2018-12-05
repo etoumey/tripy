@@ -110,7 +110,7 @@ def buildPMC(trimp, date): # Need to add support for non existent PMC
 	with open('PMCData', 'w') as fh:           
 		json.dump(PMC, fh)
 		fh.close()
-
+	return PMC
 
 def findAverage(PMC):
 	ATLdays = 7.0
@@ -129,7 +129,7 @@ def findAverage(PMC):
 	return PMC
 
 
-def generatePlot(HR, t, zones, tInZones):
+def generatePlot(HR, t, zones, tInZones, PMC):
 	plt.rc('text', usetex=True)
 	plt.rc('font', family='serif')
 	plt.figure()
@@ -175,10 +175,19 @@ def generatePlot(HR, t, zones, tInZones):
 	plt.legend(loc=2)
 	plt.title(r'\textbf{Heart Rate Histogram and PDF}')
 	plt.ylim((0,max(pdf)*1.5))
+	
+	dates = [l[0] for l in PMC]
+	ATL = [l[2] for l in PMC]
+	CTL = [l[3] for l in PMC]
+
+	plt.figure()
+	plt.plot(dates, ATL)
+	plt.plot(dates, CTL)
+	plt.grid()
+	plt.xlabel(r'\textbf{Time} (s)')
+	plt.ylabel(r'\textbf{Training Load} (bpm)')
+	plt.title(r'\textbf{Performance Manager Chart}')
 	plt.show()
-
-
-
 ############################################### Main script #############
 
 #fileName = raw_input("Enter file name:")
@@ -188,5 +197,5 @@ zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
 trimp = calcTrimp(HR, t, HRR, RHR)
 print trimp
-buildPMC(trimp, date)
-#generatePlot(HR, t, zones, tInZones)
+PMC = buildPMC(trimp, date)
+generatePlot(HR, t, zones, tInZones, PMC)
