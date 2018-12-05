@@ -76,18 +76,21 @@ def buildPMC(trimp, date): # Need to add support for non existent PMC
 	#First add all days since your last activity 
 	strDateFormat = "%Y-%m-%dT%H:%M:%S" #Just to extract the date from the string which includes the T, no T after this
 	dateFormat = "%Y-%m-%d %H:%M:%S"
-	lastDate = datetime.strptime(PMC[len(PMC)-1][0], strDateFormat) # Most recent activity 
+	lastDate = datetime.strptime(PMC[len(PMC)-1][0], dateFormat) # Most recent activity 
 	
 	today = datetime.today()
 	delta = today - lastDate
+
+	#Filling in the rows since last run of tripy
 	for i in range (1, delta.days):
-		row = [str(lastDate + timedelta(days=i)), 0, 0, 0]
+		row = [str(lastDate + timedelta(days=i)), 0, -1, -1] #Using negative one as it is an impossible CTL/ATL value
 		PMC.append(row)
 
-		
+	date = datetime.strptime(date, strDateFormat).strftime(dateFormat) #Convert datetime object to a string matching saved PMC format. 
 	dup = 0 #Initialize with no dupes
+
 	for i in range(0,len(PMC)):
-		if date == PMC[i][0]:
+		if (date == PMC[i][0] and PMC[i][3] != -1):
 			dup = 1 #you a bad boy
 	
 	if dup == 1:
@@ -95,40 +98,35 @@ def buildPMC(trimp, date): # Need to add support for non existent PMC
 
 	else:
 		# Loop through PMC and insert the line appropriately 
-		newDate = datetime.strptime(date, strDateFormat)
-
+		newDate = datetime.strptime(date,dateFormat) #Convert date string to datetime object. 
 		ii = len(PMC) - 1
 
 		while (ii > -1 and newDate < datetime.strptime(PMC[ii][0], dateFormat)):
 			ii -= 1
+		PMC[ii] = [date, trimp, -1, -1]
 
-		ATL = findAverage(PMC, 7, date, trimp, ii)
-		CTL = findAverage(PMC, 42, date, trimp, ii)
-		row = [date, trimp, ATL, CTL] #Now with real values
-		PMC.insert(ii+1, row)	
-
-		for jj in range(ii + 1, len(PMC) - 1):
-			ATL = findAverage(PMC, 7, PMC[jj][0], trimp, jj)
-			CTL = findAverage(PMC, 42, PMC[jj][0], trimp, jj)
-			row = [PMC[jj][0], PMC[jj][1], ATL, CTL] #Now with real values
-			PMC[jj] = row			
+		PMC = findAverage(PMC)
 
 	with open('PMCData', 'w') as fh:           
 		json.dump(PMC, fh)
 		fh.close()
 
 
-def findAverage(PMC, days, date, trimp, i):
-	dateFormat = "%Y-%m-%dT%H:%M:%S"
-	#delta = datetime.today() - date
+def findAverage(PMC):
+	ATLdays = 7.0
+	CTLdays = 42.0
+	#first, need to find first -1 
+	for i in range(0,len(PMC) - 1):
+		if PMC[i][3] == -1:
+			break
 
-	for j in range(0, len(PMC) - 1):
-		print 1
-	average = 1
+	for j in range(i, len(PMC)-1):
+		PMC[j][2] = PMC[j-1][2] + (PMC[j][1] - PMC[j-1][2])/ATLdays #ATL added to PMC
+		PMC[j][3] = PMC[j-1][3] + (PMC[j][1] - PMC[j-1][3])/CTLdays #ATL added to PMC
 	# Try this one first: Todays CTL = Yesterday's CTL + (Today's TRIMP - Yesterday's CTL)/time
 	#  training load (yesterday)x(exp(-1/k))+ TSS (today) x (1-exp(-1/k)) 
 
-	return average
+	return PMC
 
 
 def generatePlot(HR, t, zones, tInZones):
