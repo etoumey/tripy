@@ -105,7 +105,7 @@ def buildPMC(trimp, date): # Need to add support for non existent PMC
 			ii -= 1
 		PMC[ii] = [date, trimp, -1, -1]
 
-		PMC = findAverage(PMC)
+	PMC = findAverage(PMC)
 
 	with open('PMCData', 'w') as fh:           
 		json.dump(PMC, fh)
@@ -116,11 +116,11 @@ def findAverage(PMC):
 	ATLdays = 7.0
 	CTLdays = 42.0
 	#first, need to find first -1 
-	for i in range(0,len(PMC) - 1):
+	for i in range(0,len(PMC)):
 		if PMC[i][3] == -1:
 			break
 
-	for j in range(i, len(PMC)-1):
+	for j in range(i, len(PMC)):
 		PMC[j][2] = PMC[j-1][2] + (PMC[j][1] - PMC[j-1][2])/ATLdays #ATL added to PMC
 		PMC[j][3] = PMC[j-1][3] + (PMC[j][1] - PMC[j-1][3])/CTLdays #ATL added to PMC
 	# Try this one first: Todays CTL = Yesterday's CTL + (Today's TRIMP - Yesterday's CTL)/time
@@ -171,7 +171,7 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	currentAxis.add_patch(Rectangle(((zones[1]), 0), zones[2] - zones[1], max(pdf)*1.5, alpha=.2, label='Z2', facecolor='#6dc9ff'))
 	currentAxis.add_patch(Rectangle(((zones[0]), 0), zones[1] - zones[0], max(pdf)*1.5, alpha=.2, label='Z1', facecolor='#d142f4'))
 	currentAxis.plot(x, pdf)
-	plt.hist(HR,normed=1, bins = nbins)
+	plt.hist(HR,density=1, bins = nbins)
 	plt.legend(loc=2)
 	plt.title(r'\textbf{Heart Rate Histogram and PDF}')
 	plt.ylim((0,max(pdf)*1.5))
@@ -184,8 +184,8 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	plt.plot(dates, ATL)
 	plt.plot(dates, CTL)
 	plt.grid()
-	plt.xlabel(r'\textbf{Time} (s)')
-	plt.ylabel(r'\textbf{Training Load} (bpm)')
+	plt.xlabel(r'\textbf{Time}')
+	plt.ylabel(r'\textbf{Training Load}')
 	plt.title(r'\textbf{Performance Manager Chart}')
 	plt.show()
 ############################################### Main script #############
