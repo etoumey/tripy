@@ -77,15 +77,11 @@ def buildPMC(trimp, date): # Need to add support for non existent PMC
 	strDateFormat = "%Y-%m-%dT%H:%M:%S" #Just to extract the date from the string which includes the T, no T after this
 	dateFormat = "%Y-%m-%d %H:%M:%S"
 	lastDate = datetime.strptime(PMC[len(PMC)-1][0], dateFormat) # Most recent activity 
-	
+
 	today = datetime.today()
-	delta = today - lastDate
 
-	#Filling in the rows since last run of tripy
-	for i in range (1, delta.days):
-		row = [str(lastDate + timedelta(days=i)), 0, -1, -1] #Using negative one as it is an impossible CTL/ATL value
-		PMC.append(row)
-
+	PMC = backFill(PMC, today, lastDate + timedelta(days=1))
+	
 	date = datetime.strptime(date, strDateFormat).strftime(dateFormat) #Convert datetime object to a string matching saved PMC format. 
 	dup = 0 #Initialize with no dupes
 
@@ -103,7 +99,11 @@ def buildPMC(trimp, date): # Need to add support for non existent PMC
 
 		while (ii > -1 and newDate < datetime.strptime(PMC[ii][0], dateFormat)):
 			ii -= 1
-		PMC[ii] = [date, trimp, -1, -1]
+		if ii == -1: #Earlier than start date of PMC
+			PMC.insert(0, [date, trimp, -1, -1])
+			PMC = backFill(PMC, datetime.strptime(PMC[1][0], dateFormat) - timedelta(days=1), datetime.strptime(date, dateFormat)+timedelta(days=1))
+		else:
+			PMC[ii] = [date, trimp, -1, -1] #Replace line of the PMC with real data
 
 	PMC = findAverage(PMC)
 
@@ -111,6 +111,24 @@ def buildPMC(trimp, date): # Need to add support for non existent PMC
 		json.dump(PMC, fh)
 		fh.close()
 	return PMC
+
+
+def backFill(PMC, lastDate, firstDate):
+	#lastDate and firstDate cannot already exist in PMC. 
+	dateFormat = "%Y-%m-%d %H:%M:%S"
+	delta = lastDate - firstDate
+	for j in range(0,len(PMC)):
+		if datetime.strptime(PMC[j][0], dateFormat) > firstDate:
+			j -= 1
+			break
+
+	#Filling in the rows since last run of tripy
+	for i in range (0, delta.days+1):
+		row = [str(firstDate + timedelta(days=i)), 0, -1, -1] #Using negative one as it is an impossible CTL/ATL value
+		PMC.insert(i+j+1, row)
+	return PMC
+
+
 
 def findAverage(PMC):
 	ATLdays = 7.0
@@ -196,8 +214,8 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 ############################################### Main script #############
 
 
-fileName = raw_input("Enter file name:")
-#fileName = "zone4.gpx"
+#fileName = raw_input("Enter file name:")
+fileName = "zone4.gpx"
 HR, t, date = parseFile(fileName)
 zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
