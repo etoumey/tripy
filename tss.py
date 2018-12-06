@@ -176,7 +176,10 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	plt.title(r'\textbf{Heart Rate Histogram and PDF}')
 	plt.ylim((0,max(pdf)*1.5))
 	
+	dateFormat = "%Y-%m-%d %H:%M:%S"
+	plotFormat = "%m/%d"
 	dates = [l[0] for l in PMC]
+	dates = [datetime.strptime(d, dateFormat).strftime(plotFormat) for d in dates]
 	ATL = [l[2] for l in PMC]
 	CTL = [l[3] for l in PMC]
 
@@ -187,8 +190,11 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	plt.xlabel(r'\textbf{Time}')
 	plt.ylabel(r'\textbf{Training Load}')
 	plt.title(r'\textbf{Performance Manager Chart}')
-	plt.show()
+	plt.show(block=False)
+	raw_input()
+	plt.close() 
 ############################################### Main script #############
+
 
 fileName = raw_input("Enter file name:")
 #fileName = "zone4.gpx"
