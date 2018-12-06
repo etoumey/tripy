@@ -214,8 +214,8 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 ############################################### Main script #############
 
 
-#fileName = raw_input("Enter file name:")
-fileName = "zone4.gpx"
+fileName = raw_input("Enter file name:")
+#fileName = "zone4.gpx"
 HR, t, date = parseFile(fileName)
 zones, HRR, RHR = getZones()
 tInZones = getTimeInZones(HR, t, zones)
