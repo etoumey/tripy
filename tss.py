@@ -18,17 +18,27 @@ def parseFile(fileName):
 		if line.find("<time>") != -1:
 			date = line[10:29]
 			break
-	for line in data: # Pass through all scanned data to get HR and time
-		if line.find("<ns3:hr>") != -1: # If a heart rate tag is found
-			startHR = line.find("<ns3:hr>") # Find start and end to split the line
-			stopHR = line.find("</ns3:hr>")
-			HR.append(float(line[startHR+8:stopHR])) # Extract only HR number. 8 is the length of the HR tag. <ns3:hr>
-		elif line.find("<time>") != -1: # Do the same thing for time
+
+	secCheck = 0
+	for line in data:  # Pass through all scanned data to get HR and time
+		if line.find("<time>") != -1: # If a heart rate tag is found
 			startT = line.find("<time>")
 			stopT = line.find("</time>")
-			t.append(float(line[startT+17:stopT-11])*3600+float(line[startT+20:stopT-8])*60+float(line[startT+23:stopT-5]))  #This line extracts the hours, minutes and seconds. They are all converted to seconds and appended to the time list
+			if secCheck == 0: 
+				t.append(float(line[startT+17:stopT-11])*3600+float(line[startT+20:stopT-8])*60+float(line[startT+23:stopT-5]))  #This line extracts the hours, minutes and seconds. They are all converted to seconds and appended to the time list
+				secCheck = 1
+			else:
+				t[len(t)-1] = float(line[startT+17:stopT-11])*3600+float(line[startT+20:stopT-8])*60+float(line[startT+23:stopT-5])
+				secCheck = 1
+				print secCheck
+		elif line.find("<ns3:hr>") != -1:  
+			if secCheck:
+				startHR = line.find("<ns3:hr>") # Find start and end to split the line
+				stopHR = line.find("</ns3:hr>")
+				HR.append(float(line[startHR+8:stopHR])) # Extract only HR number. 8 is the length of the HR tag. <ns3:hr>
+				secCheck = 0
 	t[:] = [i - t[0] for i in t]
-	t.pop(0) #Delete first element of time which corresponds to activity start time. 
+	#t.pop(0) #Delete first element of time which corresponds to activity start time. 
 	return(HR,t, date)
 
 
@@ -129,7 +139,6 @@ def backFill(PMC, lastDate, firstDate):
 	return PMC
 
 
-
 def findAverage(PMC):
 	ATLdays = 7.0
 	CTLdays = 42.0
@@ -195,20 +204,29 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	plt.ylim((0,max(pdf)*1.5))
 	
 	dateFormat = "%Y-%m-%d %H:%M:%S"
-	plotFormat = "%m/%d"
+	plotFormat = "%m/%d/%Y"
 	dates = [l[0] for l in PMC]
 	dates = [datetime.strptime(d, dateFormat).strftime(plotFormat) for d in dates]
 	ATL = [l[2] for l in PMC]
 	CTL = [l[3] for l in PMC]
+	
+	endIndex = len(dates) - 1
+	if endIndex > 60:
+		startIndex = endIndex - 60
+	else:
+		startIndex = 0
+
 
 	plt.figure()
-	plt.plot(dates, ATL)
-	plt.plot(dates, CTL)
+	plt.plot(dates[startIndex:endIndex], ATL[startIndex:endIndex])
+	plt.plot(dates[startIndex:endIndex], CTL[startIndex:endIndex])
 	plt.grid()
+	plt.xticks()
 	plt.xlabel(r'\textbf{Time}')
 	plt.ylabel(r'\textbf{Training Load}')
 	plt.title(r'\textbf{Performance Manager Chart}')
 	plt.show(block=False)
+
 	raw_input()
 	plt.close() 
 ############################################### Main script #############
