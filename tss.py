@@ -203,6 +203,14 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	plt.title(r'\textbf{Heart Rate Histogram and PDF}')
 	plt.ylim((0,max(pdf)*1.5))
 	
+	printPMCMode()
+
+
+def printPMCMode():
+	with open('PMCData', 'r') as fh:
+		PMC = json.load(fh)
+		fh.close()
+
 	dateFormat = "%Y-%m-%d %H:%M:%S"
 	plotFormat = "%m/%d/%Y"
 	dates = [l[0] for l in PMC]
@@ -229,15 +237,24 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 
 	raw_input()
 	plt.close() 
+
+
+
+
 ############################################### Main script #############
 
 
-fileName = raw_input("Enter file name:")
-#fileName = "zone4.gpx"
-HR, t, date = parseFile(fileName)
-zones, HRR, RHR = getZones()
-tInZones = getTimeInZones(HR, t, zones)
-trimp = calcTrimp(HR, t, HRR, RHR)
-print trimp
-PMC = buildPMC(trimp, date)
-generatePlot(HR, t, zones, tInZones, PMC)
+mode = int(raw_input("Mode:"))
+
+if mode:
+	fileName = raw_input("Enter file name:")
+	#fileName = "zone4.gpx"
+	HR, t, date = parseFile(fileName)
+	zones, HRR, RHR = getZones()
+	tInZones = getTimeInZones(HR, t, zones)
+	trimp = calcTrimp(HR, t, HRR, RHR)
+	print trimp
+	PMC = buildPMC(trimp, date)
+	generatePlot(HR, t, zones, tInZones, PMC)
+else:
+	printPMCMode()
