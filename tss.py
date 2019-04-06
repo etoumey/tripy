@@ -5,6 +5,8 @@ from scipy.stats import gaussian_kde
 import json
 from datetime import datetime, timedelta
 import pandas as pd
+from os import listdir
+
 
 
 def parseFile(fileName):
@@ -30,7 +32,6 @@ def parseFile(fileName):
 			else:
 				t[len(t)-1] = float(line[startT+17:stopT-11])*3600+float(line[startT+20:stopT-8])*60+float(line[startT+23:stopT-5])
 				secCheck = 1
-				print secCheck
 		elif line.find("<ns3:hr>") != -1:  
 			if secCheck:
 				startHR = line.find("<ns3:hr>") # Find start and end to split the line
@@ -99,8 +100,8 @@ def buildPMC(trimp, date): # Need to add support for non existent PMC
 		if (date == PMC[i][0] and PMC[i][3] != -1):
 			dup = 1 #you a bad boy
 	
-	if dup == 1:
-		print "Error: file has already been included in PMC"
+	#if dup == 1:
+	#	print "Error: file has already been included in PMC"
 
 	else:
 		# Loop through PMC and insert the line appropriately 
@@ -239,22 +240,54 @@ def printPMCMode():
 	plt.close() 
 
 
+def getFileList():
+	gpxFiles = listdir("gpxFiles")
+	newFiles = []
+	processLog = []
+	isNewFile = 0
+
+	with open('processLog', 'r') as fh:           
+		processLog = json.load(fh)
+		fh.close()
+
+	for file in gpxFiles:
+		fh = open("gpxFiles/" + file, 'r') #Open file with input name
+		data = fh.readlines()
+		fh.close
+		for line in data: #Parse the date of the activity and we'll check if it's in the PMC
+			if line.find("<time>") != -1:
+				date = line[10:29]
+				
+				if date in processLog:
+					pass
+				else:
+					processLog.append(date)
+					newFiles.append(date)
+					isNewFile = 1
+				break
+	if isNewFile:
+		print "New files found!"
+	else:
+		print "Nothing new found, plotting PMC"
+	with open('processLog', 'w') as fh:           
+		json.dump(processLog, fh)
+		fh.close()
+
+	return newFiles
 
 
 ############################################### Main script #############
 
 
-mode = int(raw_input("Mode:"))
 
-if mode:
-	fileName = raw_input("Enter file name:")
-	#fileName = "zone4.gpx"
-	HR, t, date = parseFile(fileName)
-	zones, HRR, RHR = getZones()
-	tInZones = getTimeInZones(HR, t, zones)
-	trimp = calcTrimp(HR, t, HRR, RHR)
-	print trimp
-	PMC = buildPMC(trimp, date)
-	generatePlot(HR, t, zones, tInZones, PMC)
-else:
-	printPMCMode()
+
+newFiles = getFileList()
+#fileName = raw_input("Enter file name:")
+fileName = "zone4.gpx"
+HR, t, date = parseFile(fileName)
+zones, HRR, RHR = getZones()
+tInZones = getTimeInZones(HR, t, zones)
+trimp = calcTrimp(HR, t, HRR, RHR)
+print trimp
+PMC = buildPMC(trimp, date)
+#generatePlot(HR, t, zones, tInZones, PMC)
