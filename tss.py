@@ -210,7 +210,7 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	ATL = [l[2] for l in PMC]
 	CTL = [l[3] for l in PMC]
 	
-	endIndex = len(dates) - 1
+	endIndex = len(dates) 
 	if endIndex > 60:
 		startIndex = endIndex - 60
 	else:
