@@ -204,10 +204,10 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	plt.title(r'\textbf{Heart Rate Histogram and PDF}')
 	plt.ylim((0,max(pdf)*1.5))
 	
-	printPMCMode()
-
 
 def printPMCMode():
+	plt.rc('text', usetex=True)
+	plt.rc('font', family='serif')
 	with open('PMCData', 'r') as fh:
 		PMC = json.load(fh)
 		fh.close()
@@ -230,12 +230,10 @@ def printPMCMode():
 	plt.plot(dates[startIndex:endIndex], ATL[startIndex:endIndex])
 	plt.plot(dates[startIndex:endIndex], CTL[startIndex:endIndex])
 	plt.grid()
-	plt.xticks()
 	plt.xlabel(r'\textbf{Time}')
 	plt.ylabel(r'\textbf{Training Load}')
 	plt.title(r'\textbf{Performance Manager Chart}')
 	plt.show(block=False)
-
 	raw_input()
 	plt.close() 
 
@@ -282,12 +280,16 @@ def getFileList():
 
 
 newFiles = getFileList()
-#fileName = raw_input("Enter file name:")
-fileName = "zone4.gpx"
-HR, t, date = parseFile(fileName)
-zones, HRR, RHR = getZones()
-tInZones = getTimeInZones(HR, t, zones)
-trimp = calcTrimp(HR, t, HRR, RHR)
-print trimp
-PMC = buildPMC(trimp, date)
-#generatePlot(HR, t, zones, tInZones, PMC)
+
+for fileName in newFiles:
+	#fileName = raw_input("Enter file name:")
+	#fileName = "zone4.gpx"
+	HR, t, date = parseFile(fileName)
+	zones, HRR, RHR = getZones()
+	tInZones = getTimeInZones(HR, t, zones)
+	trimp = calcTrimp(HR, t, HRR, RHR)
+	print trimp
+	PMC = buildPMC(trimp, date)
+	generatePlot(HR, t, zones, tInZones, PMC)
+
+printPMCMode()
