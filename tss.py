@@ -260,7 +260,7 @@ def getFileList():
 					pass
 				else:
 					processLog.append(date)
-					newFiles.append(date)
+					newFiles.append("gpxFiles/" + file)
 					isNewFile = 1
 				break
 	if isNewFile:
@@ -284,6 +284,7 @@ newFiles = getFileList()
 for fileName in newFiles:
 	#fileName = raw_input("Enter file name:")
 	#fileName = "zone4.gpx"
+
 	HR, t, date = parseFile(fileName)
 	zones, HRR, RHR = getZones()
 	tInZones = getTimeInZones(HR, t, zones)
