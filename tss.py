@@ -274,23 +274,43 @@ def getFileList():
 	return newFiles
 
 
+def updatePMC():
+	with open('PMCData', 'r') as fh:
+		PMC = json.load(fh)
+		fh.close()
+
+	#First add all days since your last activity 
+	strDateFormat = "%Y-%m-%dT%H:%M:%S" #Just to extract the date from the string which includes the T, no T after this
+	dateFormat = "%Y-%m-%d %H:%M:%S"
+	lastDate = datetime.strptime(PMC[len(PMC)-1][0], dateFormat) # Most recent activity 
+
+	today = datetime.today()
+
+	PMC = backFill(PMC, today, lastDate + timedelta(days=1))
+	PMC = findAverage(PMC)
+	with open('PMCData', 'w') as fh:           
+		json.dump(PMC, fh)
+		fh.close()
+
+
+
+
 ############################################### Main script #############
 
 
 
 
 newFiles = getFileList()
+updatePMC()
 
-for fileName in newFiles:
-	#fileName = raw_input("Enter file name:")
-	#fileName = "zone4.gpx"
-
-	HR, t, date = parseFile(fileName)
-	zones, HRR, RHR = getZones()
-	tInZones = getTimeInZones(HR, t, zones)
-	trimp = calcTrimp(HR, t, HRR, RHR)
-	print trimp
-	PMC = buildPMC(trimp, date)
-	generatePlot(HR, t, zones, tInZones, PMC)
+if newFiles:
+	for fileName in newFiles:
+		HR, t, date = parseFile(fileName)
+		zones, HRR, RHR = getZones()
+		tInZones = getTimeInZones(HR, t, zones)
+		trimp = calcTrimp(HR, t, HRR, RHR)
+		print trimp
+		PMC = buildPMC(trimp, date)
+		#generatePlot(HR, t, zones, tInZones, PMC)
 
 printPMCMode()
