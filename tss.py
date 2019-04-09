@@ -1,6 +1,7 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+from matplotlib.dates import DateFormatter
 from scipy.stats import gaussian_kde
 import json
 from datetime import datetime, timedelta
@@ -208,6 +209,7 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 def printPMCMode():
 	plt.rc('text', usetex=True)
 	plt.rc('font', family='serif')
+
 	with open('PMCData', 'r') as fh:
 		PMC = json.load(fh)
 		fh.close()
@@ -215,7 +217,8 @@ def printPMCMode():
 	dateFormat = "%Y-%m-%d %H:%M:%S"
 	plotFormat = "%m/%d/%Y"
 	dates = [l[0] for l in PMC]
-	dates = [datetime.strptime(d, dateFormat).strftime(plotFormat) for d in dates]
+	dates = [datetime.strptime(d, dateFormat) for d in dates]
+	#dates = [datetime.strptime(d, dateFormat).strftime(plotFormat) for d in dates]
 	ATL = [l[2] for l in PMC]
 	CTL = [l[3] for l in PMC]
 	
@@ -226,7 +229,9 @@ def printPMCMode():
 		startIndex = 0
 
 
-	plt.figure()
+	fig = plt.figure()
+	axis = fig.add_subplot(1,1,1)
+	axis.xaxis.set_major_formatter(DateFormatter('%m/%d'))
 	plt.plot(dates[startIndex:endIndex], ATL[startIndex:endIndex])
 	plt.plot(dates[startIndex:endIndex], CTL[startIndex:endIndex])
 	plt.grid()
