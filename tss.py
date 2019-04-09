@@ -6,7 +6,8 @@ from scipy.stats import gaussian_kde
 import json
 from datetime import datetime, timedelta
 import pandas as pd
-from os import listdir
+from os import listdir, mkdir
+from subprocess import call
 
 
 
@@ -175,6 +176,7 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	currentAxis.add_patch(Rectangle((0, (zones[0])), t[len(t)-1], zones[1] - zones[0], alpha=.2, label='Z1', facecolor='#d142f4'))
 
 	plt.legend(loc=4)
+	plt.savefig('activityArchive/src/timeHistory.pdf')
 
 
 	plt.figure()
@@ -183,11 +185,11 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	colors = ['#d142f4', '#6dc9ff', '#1ecc00', '#cc8400', '#cc0000']
 	plt.pie(tInZones, labels = labels, explode = (.05,.05,.05,.05,.05), colors = colors)
 	plt.title(r'\textbf{Time in Zones}')
-	
+	plt.savefig('activityArchive/src/pie.pdf')
+
 
 	iqr = np.subtract(*np.percentile(HR, [75, 25])) # interquartile range
 	nbins = int((max(HR)-min(HR))/(2.0*iqr/(len(HR)**(1.0/3.0)))) #Freedman-Diaconis rule for number of bins in histogram
-
 
 	plt.figure()
 	kde = gaussian_kde(HR)
@@ -204,7 +206,8 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	plt.legend(loc=2)
 	plt.title(r'\textbf{Heart Rate Histogram and PDF}')
 	plt.ylim((0,max(pdf)*1.5))
-	
+	plt.savefig('activityArchive/src/hist.pdf')
+
 
 def printPMCMode():
 	plt.rc('text', usetex=True)
@@ -238,8 +241,9 @@ def printPMCMode():
 	plt.xlabel(r'\textbf{Time}')
 	plt.ylabel(r'\textbf{Training Load}')
 	plt.title(r'\textbf{Performance Manager Chart}')
-	plt.show(block=False)
-	raw_input()
+	#plt.show(block=False)
+	#raw_input()
+	plt.savefig('activityArchive/src/PMC.pdf')
 	plt.close() 
 
 
@@ -298,6 +302,18 @@ def updatePMC():
 		fh.close()
 
 
+def makeReport(trimp, date, tInZones):
+	archiveLocation = 'activityArchive/' + date
+	mkdir(archiveLocation)
+	shellCommand = 'pdflatex --output-directory ' + archiveLocation + ' --jobname=' + date + ' activityArchive/src/temp.tex' 
+	call(shellCommand, shell=True)
+	cleanUpCommand = 'rm ' + archiveLocation +'/*.log'
+	call(cleanUpCommand, shell=True)
+	cleanUpCommand = 'rm ' + archiveLocation +'/*.aux'
+	call(cleanUpCommand, shell=True)
+
+
+
 
 
 ############################################### Main script #############
@@ -316,6 +332,7 @@ if newFiles:
 		trimp = calcTrimp(HR, t, HRR, RHR)
 		print trimp
 		PMC = buildPMC(trimp, date)
-		#generatePlot(HR, t, zones, tInZones, PMC)
+		generatePlot(HR, t, zones, tInZones, PMC)
+		makeReport(trimp, date, tInZones)
 
 printPMCMode()
