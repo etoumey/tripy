@@ -41,7 +41,6 @@ def parseFile(fileName):
 				HR.append(float(line[startHR+8:stopHR])) # Extract only HR number. 8 is the length of the HR tag. <ns3:hr>
 				secCheck = 0
 	t[:] = [abs(i - t[0] + 86400) % 86400 for i in t]
-	print t
 	#t.pop(0) #Delete first element of time which corresponds to activity start time. 
 	return(HR,t, date)
 
@@ -304,6 +303,7 @@ def updatePMC():
 
 
 def makeReport(trimp, date, tInZones):
+	printPMCMode()
 	archiveLocation = 'activityArchive/' + date
 	mkdir(archiveLocation)
 	shellCommand = 'pdflatex --output-directory ' + archiveLocation + ' --jobname=' + date + ' activityArchive/src/temp.tex' 

@@ -13,4 +13,4 @@ test_diff.txt
 *.fit
 *.gpx
 *.pdf
-
+*.aux
