@@ -95,17 +95,14 @@ def buildPMC(trimp, date): # Need to add support for non existent PMC
 
 	PMC = backFill(PMC, today, lastDate + timedelta(days=1))
 	
-	date = datetime.strptime(date, strDateFormat).strftime(dateFormat) #Convert datetime object to a string matching saved PMC format. 
-	dup = 0 #Initialize with no dupes
+	#date = datetime.strptime(date, strDateFormat).strftime(dateFormat) #Convert datetime object to a string matching saved PMC format. 
+	#dup = 0 #Initialize with no dupes
 
-	for i in range(0,len(PMC)):
-		if (date == PMC[i][0] and PMC[i][3] != -1):
-			dup = 1 #you a bad boy
+	#for i in range(0,len(PMC)):
+	#	if (date == PMC[i][0] and PMC[i][3] != -1):
+	#		dup = 1 #you a bad boy
 	
-	#if dup == 1:
-	#	print "Error: file has already been included in PMC"
-
-	else:
+	if date: # there's a new activity 
 		# Loop through PMC and insert the line appropriately 
 		newDate = datetime.strptime(date,dateFormat) #Convert date string to datetime object. 
 		ii = len(PMC) - 1
@@ -335,5 +332,6 @@ if newFiles:
 		PMC = buildPMC(trimp, date)
 		generatePlot(HR, t, zones, tInZones, PMC)
 		makeReport(trimp, date, tInZones)
-
-printPMCMode()
+else:
+	PMC = buildPMC(0, 0) 
+	printPMCMode()
