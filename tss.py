@@ -1,11 +1,15 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+from matplotlib.dates import DateFormatter
 from scipy.stats import gaussian_kde
 import json
 from datetime import datetime, timedelta
 import pandas as pd
-
+from os import listdir, mkdir, path
+from subprocess import call
+import shutil
+import sys
 
 def parseFile(fileName):
 	fh = open(fileName, 'r') #Open file with input name
@@ -18,17 +22,26 @@ def parseFile(fileName):
 		if line.find("<time>") != -1:
 			date = line[10:29]
 			break
-	for line in data: # Pass through all scanned data to get HR and time
-		if line.find("<ns3:hr>") != -1: # If a heart rate tag is found
-			startHR = line.find("<ns3:hr>") # Find start and end to split the line
-			stopHR = line.find("</ns3:hr>")
-			HR.append(float(line[startHR+8:stopHR])) # Extract only HR number. 8 is the length of the HR tag. <ns3:hr>
-		elif line.find("<time>") != -1: # Do the same thing for time
+
+	secCheck = 0
+	for line in data:  # Pass through all scanned data to get HR and time
+		if line.find("<time>") != -1: # If a heart rate tag is found
 			startT = line.find("<time>")
 			stopT = line.find("</time>")
-			t.append(float(line[startT+17:stopT-11])*3600+float(line[startT+20:stopT-8])*60+float(line[startT+23:stopT-5]))  #This line extracts the hours, minutes and seconds. They are all converted to seconds and appended to the time list
-	t[:] = [i - t[0] for i in t]
-	t.pop(0) #Delete first element of time which corresponds to activity start time. 
+			if secCheck == 0: 
+				t.append(float(line[startT+17:stopT-11])*3600+float(line[startT+20:stopT-8])*60+float(line[startT+23:stopT-5]))  #This line extracts the hours, minutes and seconds. They are all converted to seconds and appended to the time list
+				secCheck = 1
+			else:
+				t[len(t)-1] = float(line[startT+17:stopT-11])*3600+float(line[startT+20:stopT-8])*60+float(line[startT+23:stopT-5])
+				secCheck = 1
+		elif line.find("<ns3:hr>") != -1:  
+			if secCheck:
+				startHR = line.find("<ns3:hr>") # Find start and end to split the line
+				stopHR = line.find("</ns3:hr>")
+				HR.append(float(line[startHR+8:stopHR])) # Extract only HR number. 8 is the length of the HR tag. <ns3:hr>
+				secCheck = 0
+	t[:] = [abs(i - t[0] + 86400) % 86400 for i in t]
+	#t.pop(0) #Delete first element of time which corresponds to activity start time. 
 	return(HR,t, date)
 
 
@@ -89,8 +102,8 @@ def buildPMC(trimp, date): # Need to add support for non existent PMC
 		if (date == PMC[i][0] and PMC[i][3] != -1):
 			dup = 1 #you a bad boy
 	
-	if dup == 1:
-		print "Error: file has already been included in PMC"
+	#if dup == 1:
+	#	print "Error: file has already been included in PMC"
 
 	else:
 		# Loop through PMC and insert the line appropriately 
@@ -129,7 +142,6 @@ def backFill(PMC, lastDate, firstDate):
 	return PMC
 
 
-
 def findAverage(PMC):
 	ATLdays = 7.0
 	CTLdays = 42.0
@@ -164,6 +176,7 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	currentAxis.add_patch(Rectangle((0, (zones[0])), t[len(t)-1], zones[1] - zones[0], alpha=.2, label='Z1', facecolor='#d142f4'))
 
 	plt.legend(loc=4)
+	plt.savefig('activityArchive/src/timeHistory.pdf')
 
 
 	plt.figure()
@@ -172,11 +185,11 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	colors = ['#d142f4', '#6dc9ff', '#1ecc00', '#cc8400', '#cc0000']
 	plt.pie(tInZones, labels = labels, explode = (.05,.05,.05,.05,.05), colors = colors)
 	plt.title(r'\textbf{Time in Zones}')
-	
+	plt.savefig('activityArchive/src/pie.pdf')
+
 
 	iqr = np.subtract(*np.percentile(HR, [75, 25])) # interquartile range
 	nbins = int((max(HR)-min(HR))/(2.0*iqr/(len(HR)**(1.0/3.0)))) #Freedman-Diaconis rule for number of bins in histogram
-
 
 	plt.figure()
 	kde = gaussian_kde(HR)
@@ -193,33 +206,151 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	plt.legend(loc=2)
 	plt.title(r'\textbf{Heart Rate Histogram and PDF}')
 	plt.ylim((0,max(pdf)*1.5))
-	
+	plt.savefig('activityArchive/src/hist.pdf')
+	plt.close()
+
+
+def printPMCMode():
+	plt.rc('text', usetex=True)
+	plt.rc('font', family='serif')
+
+	with open('PMCData', 'r') as fh:
+		PMC = json.load(fh)
+		fh.close()
+
 	dateFormat = "%Y-%m-%d %H:%M:%S"
-	plotFormat = "%m/%d"
+	plotFormat = "%m/%d/%Y"
 	dates = [l[0] for l in PMC]
-	dates = [datetime.strptime(d, dateFormat).strftime(plotFormat) for d in dates]
+	dates = [datetime.strptime(d, dateFormat) for d in dates]
+	#dates = [datetime.strptime(d, dateFormat).strftime(plotFormat) for d in dates]
 	ATL = [l[2] for l in PMC]
 	CTL = [l[3] for l in PMC]
+	
+	endIndex = len(dates) 
+	if endIndex > 60:
+		startIndex = endIndex - 60
+	else:
+		startIndex = 0
 
-	plt.figure()
-	plt.plot(dates, ATL)
-	plt.plot(dates, CTL)
+
+	fig = plt.figure()
+	axis = fig.add_subplot(1,1,1)
+	axis.xaxis.set_major_formatter(DateFormatter('%m/%d'))
+	plt.plot(dates[startIndex:endIndex], ATL[startIndex:endIndex])
+	plt.plot(dates[startIndex:endIndex], CTL[startIndex:endIndex])
 	plt.grid()
 	plt.xlabel(r'\textbf{Time}')
 	plt.ylabel(r'\textbf{Training Load}')
 	plt.title(r'\textbf{Performance Manager Chart}')
-	plt.show(block=False)
-	raw_input()
+	#plt.show(block=False)
+	#raw_input()
+	plt.savefig('activityArchive/src/PMC.pdf')
 	plt.close() 
+
+
+def getFileList():
+	gpxFiles = listdir("gpxFiles")
+	newFiles = []
+	processLog = []
+	isNewFile = 0
+
+	with open('processLog', 'r') as fh:           
+		processLog = json.load(fh)
+		fh.close()
+
+	for file in gpxFiles:
+		fh = open("gpxFiles/" + file, 'r') #Open file with input name
+		data = fh.readlines()
+		fh.close
+		for line in data: #Parse the date of the activity and we'll check if it's in the PMC
+			if line.find("<time>") != -1:
+				date = line[10:29]
+				
+				if date in processLog:
+					pass
+				else:
+					processLog.append(date)
+					newFiles.append("gpxFiles/" + file)
+					isNewFile = 1
+				break
+	if isNewFile:
+		print "New files found!"
+	else:
+		print "Nothing new found, plotting PMC"
+	return newFiles
+
+
+def updatePMC():
+	with open('PMCData', 'r') as fh:
+		PMC = json.load(fh)
+		fh.close()
+
+	#First add all days since your last activity 
+	strDateFormat = "%Y-%m-%dT%H:%M:%S" #Just to extract the date from the string which includes the T, no T after this
+	dateFormat = "%Y-%m-%d %H:%M:%S"
+	lastDate = datetime.strptime(PMC[len(PMC)-1][0], dateFormat) # Most recent activity 
+
+	today = datetime.today()
+
+	PMC = backFill(PMC, today, lastDate + timedelta(days=1))
+	PMC = findAverage(PMC)
+	with open('PMCData', 'w') as fh:           
+		json.dump(PMC, fh)
+		fh.close()
+
+
+def makeReport(trimp, date):
+	printPMCMode()
+	reportFlag = 1 #Controls whether or not tex file gets compiled and archive is created. 
+	archiveLocation = 'activityArchive/' + date
+	if path.isdir(archiveLocation):
+		shutil.rmtree(archiveLocation)
+	
+	mkdir(archiveLocation)
+	shellCommand = 'pdflatex --output-directory ' + archiveLocation + ' --jobname=' + date + ' activityArchive/src/temp.tex' 
+	call(shellCommand, shell=True)
+	cleanUpCommand = 'rm ' + archiveLocation +'/*.log'
+	call(cleanUpCommand, shell=True)
+	cleanUpCommand = 'rm ' + archiveLocation +'/*.aux'
+	call(cleanUpCommand, shell=True)
+	
+	with open('processLog', 'r') as fh:           
+		processLog = json.load(fh)
+		fh.close()
+	processLog.append(date)
+	with open('processLog', 'w') as fh:           
+		json.dump(processLog, fh)
+		fh.close()
+
+
+def getNotes(date, trimp, HR):
+	noteContent = raw_input('Please enter a workout note for ' + str(date) + ' with a TRIMP of ' + str(trimp) + ':')
+	with open('activityArchive/src/notes.tex', 'w') as fh:
+		fh.write(str(noteContent))
+
+	with open('activityArchive/src/trimp', 'w') as fh:
+		fh.write(str(trimp))
+
+	with open('activityArchive/src/hr', 'w') as fh:
+		fh.write(str(np.mean(HR)))
+
 ############################################### Main script #############
 
 
-fileName = raw_input("Enter file name:")
-#fileName = "zone4.gpx"
-HR, t, date = parseFile(fileName)
-zones, HRR, RHR = getZones()
-tInZones = getTimeInZones(HR, t, zones)
-trimp = calcTrimp(HR, t, HRR, RHR)
-print trimp
-PMC = buildPMC(trimp, date)
-generatePlot(HR, t, zones, tInZones, PMC)
+
+
+newFiles = getFileList()
+updatePMC()
+
+if newFiles:
+	for fileName in newFiles:
+		HR, t, date = parseFile(fileName)
+		zones, HRR, RHR = getZones()
+		tInZones = getTimeInZones(HR, t, zones)
+		trimp = calcTrimp(HR, t, HRR, RHR)
+		getNotes(date, trimp, HR)
+		PMC = buildPMC(trimp, date)
+		generatePlot(HR, t, zones, tInZones, PMC)
+		makeReport(trimp, date)
+
+printPMCMode()

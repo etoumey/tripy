@@ -1,0 +1,56 @@
+\documentclass[letterpaper]{article}
+\usepackage[margin = 1in]{geometry}
+\usepackage{graphicx}
+\renewcommand\thesection{\hspace{-1 em}}
+\renewcommand\appendix{}
+\usepackage{float}
+\usepackage{fancyhdr} % Custom headers and footers
+\pagestyle{fancy} 
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\fancyhf{}
+\fancyhead[L]{\today} 
+\fancyhead[C]{HOOK REPORT NAME}
+\fancyhead[R]{tripy training companion}
+\fancyfoot[L]{} 
+\fancyfoot[C]{\thepage} 
+\fancyfoot[R]{} 
+\renewcommand{\headrulewidth}{0.4pt} 
+\renewcommand{\footrulewidth}{0.4pt} 
+\setlength{\headheight}{13.6pt}
+
+\begin{document}
+\section{Workout Notes:}
+\input{activityArchive/src/notes.tex}
+
+
+\section{Workout Stats:}
+This activity was completed with a TRIMP score of \input{activityArchive/src/trimp}.
+
+The average HR was: \input{activityArchive/src/hr}
+
+TIME IN ZONES
+whatever else you can think of...
+
+\section{Performance Manager Chart}
+\begin{figure}[H]
+\centering
+\includegraphics[width = \textwidth]{activityArchive/src/PMC.pdf}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width = \textwidth]{activityArchive/src/timeHistory.pdf}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width = \textwidth]{activityArchive/src/pie.pdf}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width = \textwidth]{activityArchive/src/hist.pdf}
+\end{figure}
+
+
+
+
+\end{document}
