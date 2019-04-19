@@ -6,10 +6,10 @@ from scipy.stats import gaussian_kde
 import json
 from datetime import datetime, timedelta
 import pandas as pd
-from os import listdir, mkdir
+from os import listdir, mkdir, path
 from subprocess import call
-
-
+import shutil
+import sys
 
 def parseFile(fileName):
 	fh = open(fileName, 'r') #Open file with input name
@@ -207,6 +207,7 @@ def generatePlot(HR, t, zones, tInZones, PMC):
 	plt.title(r'\textbf{Heart Rate Histogram and PDF}')
 	plt.ylim((0,max(pdf)*1.5))
 	plt.savefig('activityArchive/src/hist.pdf')
+	plt.close()
 
 
 def printPMCMode():
@@ -276,10 +277,6 @@ def getFileList():
 		print "New files found!"
 	else:
 		print "Nothing new found, plotting PMC"
-	with open('processLog', 'w') as fh:           
-		json.dump(processLog, fh)
-		fh.close()
-
 	return newFiles
 
 
@@ -302,9 +299,13 @@ def updatePMC():
 		fh.close()
 
 
-def makeReport(trimp, date, tInZones):
+def makeReport(trimp, date):
 	printPMCMode()
+	reportFlag = 1 #Controls whether or not tex file gets compiled and archive is created. 
 	archiveLocation = 'activityArchive/' + date
+	if path.isdir(archiveLocation):
+		shutil.rmtree(archiveLocation)
+	
 	mkdir(archiveLocation)
 	shellCommand = 'pdflatex --output-directory ' + archiveLocation + ' --jobname=' + date + ' activityArchive/src/temp.tex' 
 	call(shellCommand, shell=True)
@@ -312,10 +313,26 @@ def makeReport(trimp, date, tInZones):
 	call(cleanUpCommand, shell=True)
 	cleanUpCommand = 'rm ' + archiveLocation +'/*.aux'
 	call(cleanUpCommand, shell=True)
+	
+	with open('processLog', 'r') as fh:           
+		processLog = json.load(fh)
+		fh.close()
+	processLog.append(date)
+	with open('processLog', 'w') as fh:           
+		json.dump(processLog, fh)
+		fh.close()
 
 
+def getNotes(date, trimp, HR):
+	noteContent = raw_input('Please enter a workout note for ' + str(date) + ' with a TRIMP of ' + str(trimp) + ':')
+	with open('activityArchive/src/notes.tex', 'w') as fh:
+		fh.write(str(noteContent))
 
+	with open('activityArchive/src/trimp', 'w') as fh:
+		fh.write(str(trimp))
 
+	with open('activityArchive/src/hr', 'w') as fh:
+		fh.write(str(np.mean(HR)))
 
 ############################################### Main script #############
 
@@ -331,9 +348,9 @@ if newFiles:
 		zones, HRR, RHR = getZones()
 		tInZones = getTimeInZones(HR, t, zones)
 		trimp = calcTrimp(HR, t, HRR, RHR)
-		print trimp
+		getNotes(date, trimp, HR)
 		PMC = buildPMC(trimp, date)
 		generatePlot(HR, t, zones, tInZones, PMC)
-		makeReport(trimp, date, tInZones)
+		makeReport(trimp, date)
 
 printPMCMode()
